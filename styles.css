@@ -1,0 +1,25 @@
+QWidget {
+    font-size: 25px;
+    background-color: rgb(189, 186, 186);
+    
+}
+
+QPushButton {
+        background-color: rgb(92, 91, 91);
+        border-style: outset;
+        border-width: 2px;
+        border-radius: 10px;
+        border-color: beige;
+        font: bold 14px;
+        min-width: 10em;
+        padding: 6px;
+}
+
+
+QLabel {
+    border: 2px solid blue;
+    border-radius: 4px;
+    padding: 2px;
+    color: blue;
+    max-width: 1000%;
+}
