@@ -141,6 +141,17 @@ class MyApp(QWidget):
         poOrInvoiceLayout.addWidget(poButton)
         poOrInvoiceLayout.addWidget(invoiceButton)
         
+        #Unique Inventory ID (If exists)
+        uniqueIdLayout = QHBoxLayout()
+
+        self.uniqueIdLabel = QLabel('Unique Inventory ID')
+        self.uniqueIdLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.uniqueId = QLabel('--')
+        self.uniqueId.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        uniqueIdLayout.addWidget(self.uniqueIdLabel)
+        uniqueIdLayout.addWidget(self.uniqueId)
 
 
         """BEGIN PAGE LAYOUT"""
@@ -156,6 +167,7 @@ class MyApp(QWidget):
         layout.addLayout(pcgsDataInputLayout)
         layout.addLayout(pcgsDataInputLabelLayout)
         layout.addLayout(poOrInvoiceLayout)
+        layout.addLayout(uniqueIdLayout)
 
 
         layout.addWidget(self.outputField)
