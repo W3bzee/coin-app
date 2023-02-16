@@ -9,7 +9,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt
 
 
-
+from findPCGS import pcgsCoinLookup
 
 
 
@@ -18,7 +18,7 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PCGS Coin Inventory Tracker')
-        self.setWindowIcon(QIcon('coin.ico'))
+        self.setWindowIcon(QIcon('denomination.ico'))
         self.resize(800, 650) # width,height
 
         #Set window layout
@@ -43,34 +43,34 @@ class MyApp(QWidget):
         #Start 1st Label Row
         pcgsDataLabelLayout = QHBoxLayout()
 
-        self.inventoryNumLabel = QLabel('Inventory #')
-        self.inventoryNumLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.coinNumLabel = QLabel('Coin #')
+        self.coinNumLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.PCGSLabel = QLabel('PCGS')
-        self.PCGSLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.coinDateLabel = QLabel('Coin Date')
+        self.coinDateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
     
-        self.coinLabel = QLabel('Coin')
-        self.coinLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.denominationLabel = QLabel('Denomination')
+        self.denominationLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        pcgsDataLabelLayout.addWidget(self.inventoryNumLabel)
-        pcgsDataLabelLayout.addWidget(self.PCGSLabel)
-        pcgsDataLabelLayout.addWidget(self.coinLabel)      
+        pcgsDataLabelLayout.addWidget(self.coinNumLabel)
+        pcgsDataLabelLayout.addWidget(self.coinDateLabel)
+        pcgsDataLabelLayout.addWidget(self.denominationLabel)      
 
         #Start 1st Data Row
         pcgsDataLayout = QHBoxLayout()
 
-        self.inventoryNum = QLabel('--')
-        self.inventoryNum.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.coinNum = QLabel('--')
+        self.coinNum.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.PCGSNum = QLabel('--')
-        self.PCGSNum.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.coinDate = QLabel('--')
+        self.coinDate.setAlignment(Qt.AlignmentFlag.AlignCenter)
     
-        self.coin = QLabel('--')
-        self.coin.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.denomination = QLabel('--')
+        self.denomination.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        pcgsDataLayout.addWidget(self.inventoryNum)
-        pcgsDataLayout.addWidget(self.PCGSNum)
-        pcgsDataLayout.addWidget(self.coin)  
+        pcgsDataLayout.addWidget(self.coinNum)
+        pcgsDataLayout.addWidget(self.coinDate)
+        pcgsDataLayout.addWidget(self.denomination)  
 
         
         #Start 2nd Label Row
@@ -180,7 +180,24 @@ class MyApp(QWidget):
     """DEFINE FUNCTIONS"""
     def run(self):
         barCode = self.BarCodeInput.text()
-        self.outputField.setText('{0}'.format(barCode))
+        coinNumber = barCode.split('-')[0].split('.')[0]
+        grade = barCode.split('-')[0].split('.')[1]
+
+        #Call Database
+        dfResults = pcgsCoinLookup(coinNum=coinNumber)        
+        print(dfResults)
+
+        date = dfResults['DATE'].values
+        denomination = dfResults['DENOM.   VARIETY'].values
+        gradeName = dfResults['DESIGN'].values
+
+        #Set labels with data
+        self.outputField.setText('{0}'.format(coinNumber))
+        self.coinNum.setText('{0}'.format(coinNumber))
+        self.coinDate.setText('{0}'.format(date))
+        self.denomination.setText('{0}'.format(denomination))
+        self.service.setText('PCGS')
+        self.grade.setText('{0}'.format(gradeName+grade))
 
 
 
