@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import (
-    QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout,
+    QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout, QDialog, QMessageBox,QInputDialog,
     QTextEdit, QGridLayout, QStackedLayout, QFrame,
     QLabel, QCheckBox, QComboBox, QListWidget, QLineEdit,
     QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
@@ -8,12 +8,12 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt
 import os
+import pandas as pd
 
 from dotenv import load_dotenv
 load_dotenv()
-logins = os.getenv('LOGIN')
-print(logins.split(':')[1])
-
+unpws = os.getenv('REGISTER')
+unpwFilepath = './assets/unpw.csv'
 
 
 class MyApp(QWidget):
@@ -39,14 +39,15 @@ class MyApp(QWidget):
         self.pwd = QLabel("Password")
         layout.addWidget(self.pwd, 2, 0)
 
-        self.input1 = QLineEdit()
-        layout.addWidget(self.input1, 1, 1, 1, 2)
+        self.unInput = QLineEdit()
+        layout.addWidget(self.unInput, 1, 1, 1, 2)
 
-        self.input2 = QLineEdit()
-        self.input2.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.input2, 2, 1, 1, 2)
+        self.pwInput = QLineEdit()
+        self.pwInput.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.pwInput, 2, 1, 1, 2)
 
         self.button1 = QPushButton('Register')
+        self.button1.clicked.connect(self.register)
         layout.addWidget(self.button1, 3, 1)
 
         self.button2 = QPushButton("Login")
@@ -55,15 +56,44 @@ class MyApp(QWidget):
 
     """DEFINE FUNCTIONS"""
     def login(self):
-        username = self.input2.text()
-        pw = self.input1.text()
-        print(username,pw)
-        window.close()
-        import mainApp
+        username = self.unInput.text()
+        pw = self.pwInput.text()
+        if (username in [row for row in pd.read_csv(unpwFilepath)['un']]) and (pw in [row for row in pd.read_csv(unpwFilepath)['pw']]):
+            window.close()
+            import mainApp
+        else:
+            self.noLoginPopup = QMessageBox(self)
+            self.noLoginPopup.setWindowTitle('Incorrect Login or Password')
+            self.noLoginPopup.setText('Incorrect login or password. Please try again. \
+                                      \n\nIf this is your first time logging in, \
+                                      \nplease click the register button. ')
+            self.noLoginPopup.setIcon(QMessageBox.Icon.Warning)
+            self.noLoginPopup.setStyleSheet('''QLabel {
+            border: 2px solid rgb(11, 11, 11);
+            border-radius: 4px;
+            padding: 2px;
+            color: rgb(255, 42, 0);
+            max-width: 2000%;
+            }''')
+            self.noLoginPopup.exec()
 
-
-
-
+    def register(self):
+        self.registerKey, ok = QInputDialog.getText(self,'User Register Account Key', 'Please Enter The Register Account Key')
+        if ok and (self.registerKey == unpws):
+            unpwDF = pd.read_csv(unpwFilepath).append({'un':self.unInput.text(),'pw':self.pwInput.text()},ignore_index=True)
+            unpwDF.to_csv(unpwFilepath,index=False)
+            self.registerPopup = QMessageBox(self)
+            self.registerPopup.setWindowTitle('Success')
+            self.registerPopup.setText('User {} succesfully added!\
+                                      \nAttempt to Login Now'.format(self.unInput.text()))
+            self.registerPopup.setIcon(QMessageBox.Icon.Information)
+            self.registerPopup.exec()
+        else:
+            self.failRegisterPopup = QMessageBox(self)
+            self.failRegisterPopup.setWindowTitle('Registration Unsuccessful.')
+            self.failRegisterPopup.setText('Incorrect Login. Please try again.')
+            self.failRegisterPopup.setIcon(QMessageBox.Icon.Critical)
+            self.failRegisterPopup.exec()
 
 
 """CALL APPLICATION"""

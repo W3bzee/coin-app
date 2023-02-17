@@ -15,7 +15,6 @@ QPushButton {
         padding: 6px;
 }
 
-
 QLabel {
     border: 2px solid blue;
     border-radius: 4px;
@@ -25,4 +24,14 @@ QLabel {
 }
 
 
+QMessageBox {
+    border: 2px solid red;
+    background-color: yellow;
+    padding: 5px;
+}
 
+QInputDialog {
+    border: 2px solid red;
+    background-color: yellow;
+    padding: 5px;
+}
