@@ -78,7 +78,7 @@ class MyApp(QWidget):
             self.noLoginPopup.exec()
 
     def register(self):
-        self.registerKey, ok = QInputDialog.getText(self,'User Register Account Key', 'Please Enter The Register Account Key')
+        self.registerKey, ok = QInputDialog.getText(self,'User Register Account Key', 'Please Enter The Registration Key')
         if ok and (self.registerKey == unpws):
             unpwDF = pd.read_csv(unpwFilepath).append({'un':self.unInput.text(),'pw':self.pwInput.text()},ignore_index=True)
             unpwDF.to_csv(unpwFilepath,index=False)
