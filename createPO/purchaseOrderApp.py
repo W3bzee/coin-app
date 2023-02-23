@@ -9,7 +9,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt
 
 
-from createPO import findPCGS
+from createPO.findPCGS import pcgsCoinLookup
 
 
 
