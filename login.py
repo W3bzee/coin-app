@@ -20,7 +20,7 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PCGS Coin Inventory Tracker')
-        self.setWindowIcon(QIcon('coin.ico'))
+        self.setWindowIcon(QIcon('assets/coin.ico'))
         #self.resize(800, 650) # width,height
 
         #Set window layout
@@ -54,13 +54,15 @@ class MyApp(QWidget):
         self.button2.clicked.connect(self.login)
         layout.addWidget(self.button2, 3, 2)
 
+        
+
     """DEFINE FUNCTIONS"""
     def login(self):
         username = self.unInput.text()
         pw = self.pwInput.text()
         if (username in [row for row in pd.read_csv(unpwFilepath)['un']]) and (pw in [row for row in pd.read_csv(unpwFilepath)['pw']]):
             window.close()
-            import mainApp
+            import homeScreen.homeApp as homeApp
         else:
             self.noLoginPopup = QMessageBox(self)
             self.noLoginPopup.setWindowTitle('Incorrect Login or Password')
@@ -95,10 +97,12 @@ class MyApp(QWidget):
             self.failRegisterPopup.setIcon(QMessageBox.Icon.Critical)
             self.failRegisterPopup.exec()
 
+    
+
 
 """CALL APPLICATION"""
 app = QApplication(sys.argv)
-with open("styles.css","r") as file:
+with open("createPO\styles.css","r") as file:
     app.setStyleSheet(file.read())
 window = MyApp()
 window.show()

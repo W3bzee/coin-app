@@ -9,8 +9,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt
 
 
-from findPCGS import pcgsCoinLookup
-
+from createPO import findPCGS
 
 
 
@@ -203,12 +202,9 @@ class MyApp(QWidget):
 
 
 """CALL APPLICATION"""
-#app = QApplication(sys.argv)
-#with open("styles.css","r") as file:
-#    app.setStyleSheet(file.read())
 window = MyApp()
 window.show()
-#app.exec()
+
 
 
 
