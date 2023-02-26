@@ -18,7 +18,7 @@ class MyApp(QWidget):
         super().__init__()
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('denomination.ico'))
-        self.resize(800, 650) # width,height
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
         #Set window layout
         layout = QVBoxLayout()

@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import (
-    QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout, QDialog, QMessageBox,QInputDialog,
+    QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout, QDialog, QMessageBox,QInputDialog, 
     QTextEdit, QGridLayout, QStackedLayout, QFrame,
     QLabel, QCheckBox, QComboBox, QListWidget, QLineEdit,
     QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
@@ -16,12 +16,12 @@ unpws = os.getenv('REGISTER')
 unpwFilepath = './assets/unpw.csv'
 
 
-class MyApp(QWidget):
+class loginScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets/coin.ico'))
-        #self.resize(800, 650) # width,height
+        self.resize(self.screen().size().width(), self.screen().size().height()-80) # width,height
 
         #Set window layout
         layout = QGridLayout()
@@ -31,27 +31,35 @@ class MyApp(QWidget):
 
         """BEGIN WIDGITS"""
         self.title = QLabel("Login Form:")
-        layout.addWidget(self.title, 0, 1, 1, 3, Qt.AlignmentFlag.AlignCenter)
+        
 
         self.user = QLabel("Login Form:")
-        layout.addWidget(self.user, 1, 0)
+        
 
         self.pwd = QLabel("Password")
-        layout.addWidget(self.pwd, 2, 0)
+
 
         self.unInput = QLineEdit()
-        layout.addWidget(self.unInput, 1, 1, 1, 2)
+        
 
         self.pwInput = QLineEdit()
         self.pwInput.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.pwInput, 2, 1, 1, 2)
+        
 
         self.button1 = QPushButton('Register')
         self.button1.clicked.connect(self.register)
-        layout.addWidget(self.button1, 3, 1)
+        
 
         self.button2 = QPushButton("Login")
         self.button2.clicked.connect(self.login)
+        
+
+        layout.addWidget(self.title, 0, 1, 1, 3, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.user, 1, 0)
+        layout.addWidget(self.pwd, 2, 0)
+        layout.addWidget(self.unInput, 1, 1, 1, 2)
+        layout.addWidget(self.pwInput, 2, 1, 1, 2)
+        layout.addWidget(self.button1, 3, 1)
         layout.addWidget(self.button2, 3, 2)
 
         
@@ -62,7 +70,10 @@ class MyApp(QWidget):
         pw = self.pwInput.text()
         if (username in [row for row in pd.read_csv(unpwFilepath)['un']]) and (pw in [row for row in pd.read_csv(unpwFilepath)['pw']]):
             window.close()
-            import homeScreen.homeApp as homeApp
+            with open("homeScreen\messageBoxStyles.css","r") as file:
+                app.setStyleSheet(file.read())
+            import homeScreen.homeApp as homeApp 
+            
         else:
             self.noLoginPopup = QMessageBox(self)
             self.noLoginPopup.setWindowTitle('Incorrect Login or Password')
@@ -102,9 +113,9 @@ class MyApp(QWidget):
 
 """CALL APPLICATION"""
 app = QApplication(sys.argv)
-with open("createPO\styles.css","r") as file:
+with open("styles.css","r") as file:
     app.setStyleSheet(file.read())
-window = MyApp()
+window = loginScreen()
 window.show()
 app.exec()
 

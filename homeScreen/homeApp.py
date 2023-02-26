@@ -16,7 +16,7 @@ class MyWindow(QWidget):
         # set window properties
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets/coin.ico'))
-        self.setGeometry(0,0, 1880, 800)
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
 
         # New Invoice
@@ -67,7 +67,7 @@ class MyWindow(QWidget):
     """Define Functions"""
     def newPO(self):
         window.close()
-        import createPO.purchaseOrderApp as poApp
+        import createPO.purchaseOrderApp
             #with open("homeScreen\messageBoxStyles.css","r") as file:
             #    app.setStyleSheet(file.read())
 
