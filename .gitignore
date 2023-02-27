@@ -1,0 +1,8 @@
+# Ignore all text files
+*.txt
+
+# Ignore files related to API keys
+.env
+
+# Ignore pycache
+__pycache__
