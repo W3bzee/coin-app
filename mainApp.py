@@ -246,8 +246,8 @@ class POApp(QWidget):
 
         self.dateFieldLabel = QLabel('Date')
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.dateField = QComboBox()
-        self.dateField.addItems(['Today', 'Yesterday', 'Three', 'Four'])
+        self.dateField = QtWidgets.QDateEdit(calendarPopup=True)
+        self.dateField.setDateTime(QtCore.QDateTime.currentDateTime())
         
         self.poLabel = QLabel('PO')
         self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
