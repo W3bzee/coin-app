@@ -38,29 +38,34 @@ global POAppWindow
 """HELPER CLASSES"""
 class PandasModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
-        super(PandasModel, self).__init__()
+        super().__init__()
         self._data = data
-
-    def data(self, index, role):
-        if role == Qt.ItemDataRole.DisplayRole:
-            value = self._data.iloc[index.row(), index.column()]
-            return str(value)
 
     def rowCount(self, index):
         return self._data.shape[0]
 
-    def columnCount(self, index):
+    def columnCount(self, parnet=None):
         return self._data.shape[1]
 
-    def headerData(self, section, orientation, role):
-        # section is the index of the column/row.
-        if role == Qt.ItemDataRole.DisplayRole:
-            if orientation == Qt.Orientation.Horizontal:
-                return str(self._data.columns[section])
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if index.isValid():
+            if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+                value = self._data.iloc[index.row(), index.column()]
+                return str(value)
 
-            if orientation == Qt.Orientation.Vertical:
+    def setData(self, index, value, role):
+        if role == Qt.ItemDataRole.EditRole:
+            self._data.iloc[index.row(), index.column()] = value
+            return True
+        return False
 
-                return str(self._data.index[section])
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self._data.columns[col]
+
+    def flags(self, index):
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
+
 
 
 """BEGIN APP"""
@@ -164,17 +169,31 @@ class homeApp(QWidget):
     def __init__(self):
         super().__init__()
 
+        logoutLayout = QHBoxLayout()
+        titleLayout = QHBoxLayout()
+        hbox = QHBoxLayout()
+        hbox2 = QHBoxLayout()
+        vbox = QVBoxLayout()      
 
         # set window properties
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets/coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
+        #Logout Button
+        self.logoutButton = QPushButton("Logout",self, clicked = self.logout)
+        logoutLayout.addWidget(self.logoutButton)
+        logoutLayout.addStretch(5)
+
+        #Title
+        self.Title = QLabel('Third Coast \nSupply Company LLC')
+        self.Title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titleLayout.addWidget(self.Title)
 
         # New Invoice
-        newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "New Invoice", self)
-        newInvoiceButton.setGeometry(0, 0, 200, 200)
-        newInvoiceButton.setIconSize(QSize(100,100))
+        self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "New Invoice", self)
+        self.newInvoiceButton.setGeometry(0, 0, 200, 200)
+        self.newInvoiceButton.setIconSize(QSize(100,100))
 
         # New Purchase Order
         self.newPurchaseOrder = QPushButton(QIcon("assets/coin.ico"), "New Purchase Order", self)
@@ -183,29 +202,29 @@ class homeApp(QWidget):
         self.newPurchaseOrder.clicked.connect(self.newPO)
 
         # New Contact
-        newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
-        newContact.setGeometry(0, 0, 200, 200)
-        newContact.setIconSize(QSize(100,100))
+        self.newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
+        self.newContact.setGeometry(0, 0, 200, 200)
+        self.newContact.setIconSize(QSize(100,100))
 
         # Run Report
-        runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
-        runReport.setGeometry(0, 0, 100, 200)
-        runReport.setIconSize(QSize(100,100))
+        self.runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
+        self.runReport.setGeometry(0, 0, 100, 200)
+        self.runReport.setIconSize(QSize(100,100))
 
 
-        # create horizontal and vertical layout
-        hbox = QHBoxLayout()
-        hbox2 = QHBoxLayout()
-        vbox = QVBoxLayout()
+        #START PAGE LAYOUT
 
         # add buttons to horizontal layout
-        hbox.addWidget(newInvoiceButton)
+        hbox.addWidget(self.newInvoiceButton)
         hbox.addWidget(self.newPurchaseOrder)
-        hbox.addWidget(newContact)
-        hbox.addWidget(runReport)
+        hbox.addWidget(self.newContact)
+        hbox.addWidget(self.runReport)
 
         # add horizontal layout to vertical layout
+        vbox.addLayout(logoutLayout)
+        vbox.addLayout(titleLayout)
         vbox.addStretch(1)
+
         vbox.addLayout(hbox)
         vbox.addLayout(hbox2)
         vbox.addStretch(1)
@@ -215,9 +234,14 @@ class homeApp(QWidget):
 
 
     """Define Functions"""
+    def logout(self):
+        homeAppWindow.close()
+        loginWindow.show()
+
     def newPO(self):
         homeAppWindow.close()
         POAppWindow.show()
+    
 
 
 class POApp(QWidget):
@@ -279,19 +303,14 @@ class POApp(QWidget):
 
         #Begin PO Table
         self.table = QtWidgets.QTableView()
-        #data = createNewPOfunc()
-        data = pd.DataFrame([
-          [1, 9, 2],
-          [1, 0, -1],
-          [3, 5, 2],
-          [3, 3, 2],
-          [5, 8, 9]], 
-          columns = ['A', 'B', 'C'], index=['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5'])
+        data = createNewPOfunc()
         ### USE HELPER PANDAS CLASS
         self.model = PandasModel(data)
         print(self.model)
         self.table.setModel(self.model)
-        
+        self.table.setColumnWidth(1,200)
+        self.table.setColumnWidth(7,200)
+        self.table.setColumnWidth(8,200)
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -353,10 +372,13 @@ class POApp(QWidget):
 app = QApplication([])
 with open("styles.css","r") as file:
     app.setStyleSheet(file.read())
+
 loginWindow = loginScreen()
 homeAppWindow = homeApp()
 POAppWindow = POApp()
-loginWindow.show()
+
+#loginWindow.show()
+homeAppWindow.show()
 #POAppWindow.show()
 app.exec()
 
