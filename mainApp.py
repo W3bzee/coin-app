@@ -38,29 +38,34 @@ global POAppWindow
 """HELPER CLASSES"""
 class PandasModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
-        super(PandasModel, self).__init__()
+        super().__init__()
         self._data = data
-
-    def data(self, index, role):
-        if role == Qt.ItemDataRole.DisplayRole:
-            value = self._data.iloc[index.row(), index.column()]
-            return str(value)
 
     def rowCount(self, index):
         return self._data.shape[0]
 
-    def columnCount(self, index):
+    def columnCount(self, parnet=None):
         return self._data.shape[1]
 
-    def headerData(self, section, orientation, role):
-        # section is the index of the column/row.
-        if role == Qt.ItemDataRole.DisplayRole:
-            if orientation == Qt.Orientation.Horizontal:
-                return str(self._data.columns[section])
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if index.isValid():
+            if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+                value = self._data.iloc[index.row(), index.column()]
+                return str(value)
 
-            if orientation == Qt.Orientation.Vertical:
+    def setData(self, index, value, role):
+        if role == Qt.ItemDataRole.EditRole:
+            self._data.iloc[index.row(), index.column()] = value
+            return True
+        return False
 
-                return str(self._data.index[section])
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self._data.columns[col]
+
+    def flags(self, index):
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
+
 
 
 """BEGIN APP"""
@@ -279,18 +284,12 @@ class POApp(QWidget):
 
         #Begin PO Table
         self.table = QtWidgets.QTableView()
-        #data = createNewPOfunc()
-        data = pd.DataFrame([
-          [1, 9, 2],
-          [1, 0, -1],
-          [3, 5, 2],
-          [3, 3, 2],
-          [5, 8, 9]], 
-          columns = ['A', 'B', 'C'], index=['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5'])
+        data = createNewPOfunc()
         ### USE HELPER PANDAS CLASS
         self.model = PandasModel(data)
         print(self.model)
         self.table.setModel(self.model)
+        self.table.setColumnWidth(1,200)
         
 
         #Vertical Buttons
@@ -353,11 +352,13 @@ class POApp(QWidget):
 app = QApplication([])
 with open("styles.css","r") as file:
     app.setStyleSheet(file.read())
+
 loginWindow = loginScreen()
 homeAppWindow = homeApp()
 POAppWindow = POApp()
-loginWindow.show()
-#POAppWindow.show()
+
+#loginWindow.show()
+POAppWindow.show()
 app.exec()
 
 print('DID YOU TRY TURNING IT OFF & ON AGAIN')
