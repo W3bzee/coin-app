@@ -121,7 +121,7 @@ class loginScreen(QWidget):
         if (username in [row for row in pd.read_csv(unpwFilepath)['un']]) and (pw in [row for row in pd.read_csv(unpwFilepath)['pw']]):
             loginWindow.close()
             homeAppWindow.show()
-            with open("homeScreen\messageBoxStyles.css","r") as file:
+            with open("styles.css","r") as file:
                 app.setStyleSheet(file.read())
              
             
@@ -356,8 +356,8 @@ with open("styles.css","r") as file:
 loginWindow = loginScreen()
 homeAppWindow = homeApp()
 POAppWindow = POApp()
-#loginWindow.show()
-POAppWindow.show()
+loginWindow.show()
+#POAppWindow.show()
 app.exec()
 
 print('DID YOU TRY TURNING IT OFF & ON AGAIN')
