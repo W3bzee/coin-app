@@ -169,17 +169,31 @@ class homeApp(QWidget):
     def __init__(self):
         super().__init__()
 
+        logoutLayout = QHBoxLayout()
+        titleLayout = QHBoxLayout()
+        hbox = QHBoxLayout()
+        hbox2 = QHBoxLayout()
+        vbox = QVBoxLayout()      
 
         # set window properties
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets/coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
+        #Logout Button
+        self.logoutButton = QPushButton("Logout",self, clicked = self.logout)
+        logoutLayout.addWidget(self.logoutButton)
+        logoutLayout.addStretch(5)
+
+        #Title
+        self.Title = QLabel('Third Coast \nSupply Company LLC')
+        self.Title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titleLayout.addWidget(self.Title)
 
         # New Invoice
-        newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "New Invoice", self)
-        newInvoiceButton.setGeometry(0, 0, 200, 200)
-        newInvoiceButton.setIconSize(QSize(100,100))
+        self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "New Invoice", self)
+        self.newInvoiceButton.setGeometry(0, 0, 200, 200)
+        self.newInvoiceButton.setIconSize(QSize(100,100))
 
         # New Purchase Order
         self.newPurchaseOrder = QPushButton(QIcon("assets/coin.ico"), "New Purchase Order", self)
@@ -188,29 +202,29 @@ class homeApp(QWidget):
         self.newPurchaseOrder.clicked.connect(self.newPO)
 
         # New Contact
-        newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
-        newContact.setGeometry(0, 0, 200, 200)
-        newContact.setIconSize(QSize(100,100))
+        self.newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
+        self.newContact.setGeometry(0, 0, 200, 200)
+        self.newContact.setIconSize(QSize(100,100))
 
         # Run Report
-        runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
-        runReport.setGeometry(0, 0, 100, 200)
-        runReport.setIconSize(QSize(100,100))
+        self.runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
+        self.runReport.setGeometry(0, 0, 100, 200)
+        self.runReport.setIconSize(QSize(100,100))
 
 
-        # create horizontal and vertical layout
-        hbox = QHBoxLayout()
-        hbox2 = QHBoxLayout()
-        vbox = QVBoxLayout()
+        #START PAGE LAYOUT
 
         # add buttons to horizontal layout
-        hbox.addWidget(newInvoiceButton)
+        hbox.addWidget(self.newInvoiceButton)
         hbox.addWidget(self.newPurchaseOrder)
-        hbox.addWidget(newContact)
-        hbox.addWidget(runReport)
+        hbox.addWidget(self.newContact)
+        hbox.addWidget(self.runReport)
 
         # add horizontal layout to vertical layout
+        vbox.addLayout(logoutLayout)
+        vbox.addLayout(titleLayout)
         vbox.addStretch(1)
+
         vbox.addLayout(hbox)
         vbox.addLayout(hbox2)
         vbox.addStretch(1)
@@ -220,9 +234,14 @@ class homeApp(QWidget):
 
 
     """Define Functions"""
+    def logout(self):
+        homeAppWindow.close()
+        loginWindow.show()
+
     def newPO(self):
         homeAppWindow.close()
         POAppWindow.show()
+    
 
 
 class POApp(QWidget):
@@ -290,7 +309,8 @@ class POApp(QWidget):
         print(self.model)
         self.table.setModel(self.model)
         self.table.setColumnWidth(1,200)
-        
+        self.table.setColumnWidth(7,200)
+        self.table.setColumnWidth(8,200)
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -358,7 +378,8 @@ homeAppWindow = homeApp()
 POAppWindow = POApp()
 
 #loginWindow.show()
-POAppWindow.show()
+homeAppWindow.show()
+#POAppWindow.show()
 app.exec()
 
 print('DID YOU TRY TURNING IT OFF & ON AGAIN')
