@@ -17,7 +17,7 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PCGS Coin Inventory Tracker')
-        self.setWindowIcon(QIcon('denomination.ico'))
+        self.setWindowIcon(QIcon('assets\coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
         #Set window layout
@@ -25,6 +25,10 @@ class MyApp(QWidget):
         self.setLayout(layout)
 
         """BEGIN WIDGITS"""
+        #Back Button
+        self.backButton = QPushButton('&Back', clicked=self.returnHome)
+    
+
         #Top Label
         self.topLabel = QLabel('Coin Tracker Inventory System')
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -160,6 +164,7 @@ class MyApp(QWidget):
 
         """BEGIN PAGE LAYOUT"""
         #layout
+        layout.addWidget(self.backButton)
         layout.addWidget(self.topLabel)
         layout.addWidget(self.BarCodeInput)
         layout.addWidget(runButton)
@@ -177,6 +182,11 @@ class MyApp(QWidget):
         layout.addWidget(self.outputField)
 
     """DEFINE FUNCTIONS"""
+    def returnHome(self):
+        window.close()
+        print('IM RUNNING')
+        
+
     def run(self):
         barCode = self.BarCodeInput.text()
         coinNumber = barCode.split('-')[0].split('.')[0]

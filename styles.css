@@ -4,6 +4,10 @@ QWidget {
     
 }
 
+loginScreen {
+
+}
+
 QPushButton {
         background-color: rgb(251, 39, 39);
         border-style: outset;
@@ -11,16 +15,23 @@ QPushButton {
         border-radius: 10px;
         border-color: beige;
         font: bold 18px;
-        min-width: 10em;
+        min-width: 10px;
         padding: 6px;
 }
+
+QPushButton:hover {
+    background-color: blue;
+
+}
+
 
 QLabel {
     border: 2px solid blue;
     border-radius: 4px;
-    padding: 2px;
-    color: blue;
+    padding: 6px;
+    color: rgb(0, 0, 0);
     max-width: 2000%;
+    margin: 15px;
 }
 
 

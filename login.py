@@ -23,46 +23,47 @@ class loginScreen(QWidget):
         self.setWindowIcon(QIcon('assets/coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80) # width,height
 
-        #Set window layout
-        layout = QGridLayout()
-        layout.setContentsMargins(30,30,30,30)
-        layout.setSpacing(10)
-        self.setLayout(layout)
-
         """BEGIN WIDGITS"""
-        self.title = QLabel("Login Form:")
-        
-
-        self.user = QLabel("Login Form:")
-        
+        self.title = QLabel("Third Coast \nSupply Company LLC")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    
+        self.user = QLabel("Login Form:")    
+        self.user.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.pwd = QLabel("Password")
-
-
-        self.unInput = QLineEdit()
+        self.pwd.setAlignment(Qt.AlignmentFlag.AlignRight)
         
+        self.unInput = QLineEdit()
 
         self.pwInput = QLineEdit()
         self.pwInput.setEchoMode(QLineEdit.EchoMode.Password)
-        
 
         self.button1 = QPushButton('Register')
         self.button1.clicked.connect(self.register)
-        
 
         self.button2 = QPushButton("Login")
         self.button2.clicked.connect(self.login)
-        
 
-        layout.addWidget(self.title, 0, 1, 1, 3, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.user, 1, 0)
-        layout.addWidget(self.pwd, 2, 0)
-        layout.addWidget(self.unInput, 1, 1, 1, 2)
-        layout.addWidget(self.pwInput, 2, 1, 1, 2)
-        layout.addWidget(self.button1, 3, 1)
-        layout.addWidget(self.button2, 3, 2)
+        #Set window layout
+        layout = QVBoxLayout()
+        hbox = QHBoxLayout()
 
+        layout.addStretch(1)
+        hbox.addWidget(self.title)
+        layout.addLayout(hbox)
+        loginLayout = QGridLayout()
+        loginLayout.addWidget(self.user, 1, 0)
+        loginLayout.addWidget(self.pwd, 2, 0)
+        loginLayout.addWidget(self.unInput, 1, 1, 1, 2)
+        loginLayout.addWidget(self.pwInput, 2, 1, 1, 2)
+        loginLayout.addWidget(self.button1, 3, 1)
+        loginLayout.addWidget(self.button2, 3, 2)
+        loginLayout.setContentsMargins(30,30,30,30)
+        loginLayout.setSpacing(10)
         
+        layout.addLayout(loginLayout)
+        layout.addStretch(1)
+        self.setLayout(layout)
 
     """DEFINE FUNCTIONS"""
     def login(self):
@@ -72,7 +73,7 @@ class loginScreen(QWidget):
             window.close()
             with open("homeScreen\messageBoxStyles.css","r") as file:
                 app.setStyleSheet(file.read())
-            import homeScreen.homeApp as homeApp 
+            import homeScreen.homeApp 
             
         else:
             self.noLoginPopup = QMessageBox(self)
@@ -112,14 +113,16 @@ class loginScreen(QWidget):
 
 
 """CALL APPLICATION"""
-app = QApplication(sys.argv)
+global app
+global window
+app = QApplication([])
 with open("styles.css","r") as file:
     app.setStyleSheet(file.read())
 window = loginScreen()
 window.show()
 app.exec()
 
-
+print('WHEN DOES THIS HAPPEN')
 
 """
 HELPFUL LINKS:

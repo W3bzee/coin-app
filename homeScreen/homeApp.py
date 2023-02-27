@@ -6,8 +6,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSize
 
 
-
-
 class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -52,8 +50,6 @@ class MyWindow(QWidget):
         hbox.addWidget(newContact)
         hbox.addWidget(runReport)
 
-
-
         # add horizontal layout to vertical layout
         vbox.addStretch(1)
         vbox.addLayout(hbox)
@@ -66,7 +62,7 @@ class MyWindow(QWidget):
 
     """Define Functions"""
     def newPO(self):
-        window.close()
+        #window.close()
         import createPO.purchaseOrderApp
             #with open("homeScreen\messageBoxStyles.css","r") as file:
             #    app.setStyleSheet(file.read())
@@ -75,3 +71,5 @@ class MyWindow(QWidget):
 """CALL APPLICATION"""
 window = MyWindow()
 window.show()
+
+print('THIS DOESNT RUN WHEN I CLICK THE BACK BUTTON')
