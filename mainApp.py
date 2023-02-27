@@ -205,7 +205,7 @@ class homeApp(QWidget):
         self.newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
         self.newContact.setGeometry(0, 0, 200, 200)
         self.newContact.setIconSize(QSize(100,100))
-
+        self.newContact.clicked.connect(self.newContactFunc)
         # Run Report
         self.runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
         self.runReport.setGeometry(0, 0, 100, 200)
@@ -242,7 +242,10 @@ class homeApp(QWidget):
         homeAppWindow.close()
         POAppWindow.show()
     
-
+    def newContactFunc(self):
+        homeAppWindow.close()
+        newContactWindow.show()
+    
 
 class POApp(QWidget):
     def __init__(self):
@@ -271,6 +274,7 @@ class POApp(QWidget):
         self.dateFieldLabel = QLabel('Date')
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.dateField = QtWidgets.QDateEdit(calendarPopup=True)
+
         self.dateField.setDateTime(QtCore.QDateTime.currentDateTime())
         
         self.poLabel = QLabel('PO')
@@ -299,7 +303,7 @@ class POApp(QWidget):
 
         #PO TABLE & BUTTONS
         bigHorizontalLayout = QHBoxLayout()
-        verticalButtonLayout = QVBoxLayout()
+        verticalLabelLayout = QVBoxLayout()
 
         #Begin PO Table
         self.table = QtWidgets.QTableView()
@@ -314,22 +318,22 @@ class POApp(QWidget):
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
-        verticalButtonLayout.addWidget(self.saveButton)
+        verticalLabelLayout.addWidget(self.saveButton)
 
-        self.closeButton = QPushButton('Close')
-        verticalButtonLayout.addWidget(self.closeButton)
+        self.emailLabel = QPushButton('Close')
+        verticalLabelLayout.addWidget(self.emailLabel)
 
-        self.printPOButton = QPushButton('Print PO')
-        verticalButtonLayout.addWidget(self.printPOButton)
+        self.phoneLabel = QPushButton('Print PO')
+        verticalLabelLayout.addWidget(self.phoneLabel)
 
-        self.printLabelsButton = QPushButton('Print Labels')
-        verticalButtonLayout.addWidget(self.printLabelsButton)
+        self.addressLabel = QPushButton('Print Labels')
+        verticalLabelLayout.addWidget(self.addressLabel)
 
         self.printOneLabelButton = QPushButton('Print One Label')
-        verticalButtonLayout.addWidget(self.printOneLabelButton)
+        verticalLabelLayout.addWidget(self.printOneLabelButton)
 
         bigHorizontalLayout.addWidget(self.table)
-        bigHorizontalLayout.addLayout(verticalButtonLayout)
+        bigHorizontalLayout.addLayout(verticalLabelLayout)
 
 
 
@@ -363,7 +367,98 @@ class POApp(QWidget):
         homeAppWindow.show()
         
 
+class newContactApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('PCGS Coin Inventory Tracker')
+        self.setWindowIcon(QIcon('assets\coin.ico'))
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
+
+        """BEGIN WIDGITS"""
+        #Back Button
+        backButton = QPushButton(QIcon("assets\FreeWebToolkit_1677391325.ico"),"", self)
+        backButton.setGeometry(0, 0, 75, 100)
+        backButton.setIconSize(QSize(80,80))
+        backButton.clicked.connect(self.returnHomeScreen)
+        
+        #Top Label
+        self.topLabel = QLabel('Third Coast \nSupply Company LLC')
+        self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        #Customer Label & Info
+        customerBoxLayout = QHBoxLayout()
+        emailBoxLayout = QHBoxLayout()
+        phoneBoxLayout = QHBoxLayout()
+        AddressBoxLayout = QHBoxLayout()
+        verticalLayout = QVBoxLayout()
+
+        #Customer
+        self.customerLabel = QLabel('Customer:')
+        self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.customerEntry = QLineEdit()
+        customerBoxLayout.addWidget(self.customerLabel)
+        customerBoxLayout.addWidget(self.customerEntry)
+
+        #Email
+        self.emailLabel = QLabel('Email:')
+        self.emailLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.emailEntry = QLineEdit()
+        emailBoxLayout.addWidget(self.emailLabel)
+        emailBoxLayout.addWidget(self.emailEntry)
+
+        #Phone
+        self.phoneLabel = QLabel('Phone:')
+        self.phoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.phoneEntry = QLineEdit()
+        phoneBoxLayout.addWidget(self.phoneLabel)
+        phoneBoxLayout.addWidget(self.phoneEntry)
+
+        #Address
+        self.addressLabel = QLabel('Address:')
+        self.addressLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.addressEntry = QLineEdit()
+        AddressBoxLayout.addWidget(self.addressLabel)
+        AddressBoxLayout.addWidget(self.addressEntry)  
+
+        #Vertical Entries
+        verticalLayout.addLayout(customerBoxLayout)
+        verticalLayout.addLayout(emailBoxLayout)
+        verticalLayout.addLayout(phoneBoxLayout)
+        verticalLayout.addLayout(AddressBoxLayout)
+
+        #Save & Close Buttons
+        newContactButtonsLayout = QHBoxLayout()
+
+        self.saveNewContactButton = QPushButton('Save')
+        self.closeNewContactButton = QPushButton('Close')
+
+        newContactButtonsLayout.addStretch(1)
+        newContactButtonsLayout.addWidget(self.saveNewContactButton)
+        newContactButtonsLayout.addWidget(self.closeNewContactButton)
+        newContactButtonsLayout.addStretch(1)
+
+        #Set top layout
+        topLayout = QHBoxLayout()
+        topLayout.addWidget(backButton)
+        topLayout.addStretch(1)
+
+        #Begin page layout
+        pageLayout = QVBoxLayout()
+        pageLayout.addLayout(topLayout)
+        pageLayout.addWidget(self.topLabel)
+        pageLayout.addStretch(1)
+        pageLayout.addLayout(verticalLayout)
+        pageLayout.addLayout(newContactButtonsLayout)
+
+        pageLayout.addStretch(5)
+        self.setLayout(pageLayout)
+
+
+    """BEGIN FUNCTIONS"""
+    def returnHomeScreen(self):
+        newContactWindow.close()
+        homeAppWindow.show()
 
 
 
@@ -376,10 +471,13 @@ with open("styles.css","r") as file:
 loginWindow = loginScreen()
 homeAppWindow = homeApp()
 POAppWindow = POApp()
+newContactWindow = newContactApp()
 
-#loginWindow.show()
-homeAppWindow.show()
+loginWindow.show()
+#homeAppWindow.show()
 #POAppWindow.show()
+#newContactWindow.show()
+
 app.exec()
 
 print('DID YOU TRY TURNING IT OFF & ON AGAIN')
