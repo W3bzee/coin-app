@@ -6,6 +6,8 @@ from PyQt6.QtWidgets import (
     QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
 )
 from PyQt6.QtGui import *
+
+from PyQt6.QtGui import QIcon, QFont, QPixmap, QMovie, QRegion
 from PyQt6.QtCore import Qt
 import os
 import pandas as pd
@@ -27,12 +29,16 @@ import sys
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 import pandas as pd
+from datetime import date
+
+
 
 
 global app
 global loginWindow
 global homeAppWindow
 global POAppWindow
+global verticalLabelLayout
 
 
 """HELPER CLASSES"""
@@ -52,6 +58,7 @@ class PandasModel(QtCore.QAbstractTableModel):
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 value = self._data.iloc[index.row(), index.column()]
                 return str(value)
+        
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
@@ -59,9 +66,14 @@ class PandasModel(QtCore.QAbstractTableModel):
             return True
         return False
 
-    def headerData(self, col, orientation, role):
-        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-            return self._data.columns[col]
+    def headerData(self, section, orientation, role):
+        # section is the index of the column/row.
+        if role == Qt.ItemDataRole.DisplayRole:
+            if orientation == Qt.Orientation.Horizontal:
+                return str(self._data.columns[section])
+
+            if orientation == Qt.Orientation.Vertical:
+                return str(self._data.index[section])
 
     def flags(self, index):
         return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
@@ -124,6 +136,8 @@ class loginScreen(QWidget):
         username = self.unInput.text()
         pw = self.pwInput.text()
         if (username in [row for row in pd.read_csv(unpwFilepath)['un']]) and (pw in [row for row in pd.read_csv(unpwFilepath)['pw']]):
+            self.unInput.clear()
+            self.pwInput.clear()
             loginWindow.close()
             homeAppWindow.show()
             with open("styles.css","r") as file:
@@ -264,7 +278,7 @@ class POApp(QWidget):
         
 
         #Top Label
-        self.topLabel = QLabel('Third Coast \nSupply Company LLC')
+        self.topLabel = QLabel('Third Coast\nSupply Company LLC')
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
@@ -273,9 +287,8 @@ class POApp(QWidget):
 
         self.dateFieldLabel = QLabel('Date')
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.dateField = QtWidgets.QDateEdit(calendarPopup=True)
+        self.dateField = QtWidgets.QDateEdit(calendarPopup=True,date=date.today())
 
-        self.dateField.setDateTime(QtCore.QDateTime.currentDateTime())
         
         self.poLabel = QLabel('PO')
         self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -292,6 +305,7 @@ class POApp(QWidget):
         self.termsField = QComboBox()
         self.termsField.addItems(['Consignment','Sold','Split'])
 
+        selectorFieldLayout.addStretch(1)
         selectorFieldLayout.addWidget(self.dateFieldLabel)
         selectorFieldLayout.addWidget(self.dateField)
         selectorFieldLayout.addWidget(self.poLabel)
@@ -300,17 +314,16 @@ class POApp(QWidget):
         selectorFieldLayout.addWidget(self.customerField)
         selectorFieldLayout.addWidget(self.termsLabel)
         selectorFieldLayout.addWidget(self.termsField)
+        selectorFieldLayout.addStretch(1)
 
         #PO TABLE & BUTTONS
         bigHorizontalLayout = QHBoxLayout()
-        verticalLabelLayout = QVBoxLayout()
+        self.verticalLabelLayout = QVBoxLayout()
 
         #Begin PO Table
         self.table = QtWidgets.QTableView()
-        data = createNewPOfunc()
         ### USE HELPER PANDAS CLASS
-        self.model = PandasModel(data)
-        print(self.model)
+        self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
         self.table.setColumnWidth(1,200)
         self.table.setColumnWidth(7,200)
@@ -318,30 +331,17 @@ class POApp(QWidget):
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
-        verticalLabelLayout.addWidget(self.saveButton)
-
-        self.emailLabel = QPushButton('Close')
-        verticalLabelLayout.addWidget(self.emailLabel)
-
-        self.phoneLabel = QPushButton('Print PO')
-        verticalLabelLayout.addWidget(self.phoneLabel)
-
-        self.addressLabel = QPushButton('Print Labels')
-        verticalLabelLayout.addWidget(self.addressLabel)
-
-        self.printOneLabelButton = QPushButton('Print One Label')
-        verticalLabelLayout.addWidget(self.printOneLabelButton)
+        self.saveButton.clicked.connect(self.savePO)
+        self.verticalLabelLayout.addWidget(self.saveButton)
 
         bigHorizontalLayout.addWidget(self.table)
-        bigHorizontalLayout.addLayout(verticalLabelLayout)
+        bigHorizontalLayout.addLayout(self.verticalLabelLayout)
 
 
 
         #Set window layout
         pageLayout = QVBoxLayout()
         topLayout = QHBoxLayout()
-
-
 
 
         topLayout.addWidget(backButton)
@@ -360,11 +360,38 @@ class POApp(QWidget):
 
 
 
-
     """BEGIN FUNCTIONS"""
     def returnHomeScreen(self):
+        #Clear Data
+        try:
+            if not self.phoneLabel.isHidden():
+                self.phoneLabel.setHidden(not self.phoneLabel.isHidden())
+            if not self.addressLabel.isHidden():
+                self.addressLabel.setHidden(not self.addressLabel.isHidden())
+            if not self.printOneLabelButton.isHidden():
+                self.printOneLabelButton.setHidden(not self.printOneLabelButton.isHidden())
+        except AttributeError as ae:
+            print('Good to go dawg')
+        self.model = PandasModel(createNewPOfunc())
+        self.table.setModel(self.model)
+        
+        #Close Window
         POAppWindow.close()
         homeAppWindow.show()
+
+    def savePO(self):
+
+        ## ADD OTHER GUI FUNCTIONAILITY
+        self.phoneLabel = QPushButton('Print PO')
+        self.verticalLabelLayout.addWidget(self.phoneLabel)
+
+        self.addressLabel = QPushButton('Print Labels')
+        self.verticalLabelLayout.addWidget(self.addressLabel)
+
+        self.printOneLabelButton = QPushButton('Print One Label')
+        self.verticalLabelLayout.addWidget(self.printOneLabelButton)
+
+        
         
 
 class newContactApp(QWidget):
@@ -373,8 +400,7 @@ class newContactApp(QWidget):
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets\coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
-
-
+        
         """BEGIN WIDGITS"""
         #Back Button
         backButton = QPushButton(QIcon("assets\FreeWebToolkit_1677391325.ico"),"", self)
@@ -431,11 +457,9 @@ class newContactApp(QWidget):
         newContactButtonsLayout = QHBoxLayout()
 
         self.saveNewContactButton = QPushButton('Save')
-        self.closeNewContactButton = QPushButton('Close')
 
         newContactButtonsLayout.addStretch(1)
         newContactButtonsLayout.addWidget(self.saveNewContactButton)
-        newContactButtonsLayout.addWidget(self.closeNewContactButton)
         newContactButtonsLayout.addStretch(1)
 
         #Set top layout
@@ -457,6 +481,10 @@ class newContactApp(QWidget):
 
     """BEGIN FUNCTIONS"""
     def returnHomeScreen(self):
+        self.customerEntry.setText('')
+        self.emailEntry.setText('')
+        self.phoneEntry.setText('')
+        self.addressEntry.setText('')
         newContactWindow.close()
         homeAppWindow.show()
 
@@ -465,7 +493,7 @@ class newContactApp(QWidget):
 """CALL APPLICATION"""
 
 app = QApplication([])
-with open("styles.css","r") as file:
+with open("stylesContactApp.css","r") as file:
     app.setStyleSheet(file.read())
 
 loginWindow = loginScreen()
@@ -473,9 +501,9 @@ homeAppWindow = homeApp()
 POAppWindow = POApp()
 newContactWindow = newContactApp()
 
-loginWindow.show()
+#loginWindow.show()
 #homeAppWindow.show()
-#POAppWindow.show()
+POAppWindow.show()
 #newContactWindow.show()
 
 app.exec()
@@ -488,5 +516,7 @@ HELPFUL LINKS:
 For Structure: https://www.pythonguis.com/tutorials/pyqt6-layouts/
 
 For CSS Styling with PyQt6: https://doc.qt.io/qtforpython/overviews/stylesheet-examples.html#style-sheet-usage
+
+All Qt Modules: https://doc.qt.io/qtforpython/modules.html
 
 """
