@@ -501,9 +501,9 @@ homeAppWindow = homeApp()
 POAppWindow = POApp()
 newContactWindow = newContactApp()
 
-#loginWindow.show()
+loginWindow.show()
 #homeAppWindow.show()
-POAppWindow.show()
+#POAppWindow.show()
 #newContactWindow.show()
 
 app.exec()
