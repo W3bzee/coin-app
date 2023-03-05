@@ -3,9 +3,11 @@ from PyQt6.QtWidgets import (
     QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout, QDialog, QMessageBox,QInputDialog,
     QTextEdit, QGridLayout, QStackedLayout, QFrame,
     QLabel, QCheckBox, QComboBox, QListWidget, QLineEdit,
-    QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
+    QLineEdit, QSpinBox, QDoubleSpinBox, QSlider, QTableWidget
 )
 from PyQt6.QtGui import *
+
+from PyQt6.QtWidgets import QTableWidgetItem
 
 from PyQt6.QtGui import QIcon, QFont, QPixmap, QMovie, QRegion
 from PyQt6.QtCore import Qt
@@ -23,11 +25,14 @@ unpws = os.getenv('REGISTER')
 unpwFilepath = './assets/unpw.csv'
 
 
-from createNewPO import *
+from Database.createNewPO import *
+from Database.getCoinData import *
+from Database.updatePOTable import *
+
 
 import sys
 from PyQt6 import QtCore, QtGui, QtWidgets
-
+from datetime import datetime
 import pandas as pd
 from datetime import date
 
@@ -293,7 +298,10 @@ class POApp(QWidget):
         self.poLabel = QLabel('PO')
         self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.poField = QComboBox()
-        self.poField.addItems(['100','101','102'])
+        listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
+        listPOs = listPOs + [pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].iloc[-1]+1]
+        listPOs = sorted(listPOs, reverse=True)
+        self.poField.addItems(list(map(str, listPOs)))
 
         self.customerLabel = QLabel('Customer')
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -325,9 +333,11 @@ class POApp(QWidget):
         ### USE HELPER PANDAS CLASS
         self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
+        self.table.installEventFilter(self)
         self.table.setColumnWidth(1,200)
         self.table.setColumnWidth(7,200)
         self.table.setColumnWidth(8,200)
+        
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -358,7 +368,27 @@ class POApp(QWidget):
         pageLayout.addStretch(5)
         self.setLayout(pageLayout)
 
+    """BEGIN EVENT FILTER"""
+    def eventFilter(self, source, event):
+        if source == self.table and event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
+            try:
+                tableEntry = self.model._data['PCGS #'].iloc[-1]
+                newDF = updateTable(pd.DataFrame(self.model._data),tableEntry)
+                newDF = pd.concat([newDF, createNewPOfunc()])
+                newIndex = ['{:03d}'.format(i) for i in range(1, len(newDF)+1)]
+                newDF.index = newIndex
+                self.model = PandasModel(newDF)
+                self.table.setModel(self.model)
+                self.table.installEventFilter(self)
+                self.table.setColumnWidth(1,200)
+                self.table.setColumnWidth(7,200)
+                self.table.setColumnWidth(8,200)
 
+            except IndexError:
+                print(IndexError)
+            except ValueError:
+                print(ValueError)
+        return super().eventFilter(source,event)
 
     """BEGIN FUNCTIONS"""
     def returnHomeScreen(self):
@@ -374,26 +404,51 @@ class POApp(QWidget):
             print('Good to go dawg')
         self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
+        listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
+        listPOs = listPOs + [pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].iloc[-1]+1]
+        listPOs = sorted(listPOs, reverse=True)
+        self.poField.clear()
+        self.poField.addItems(list(map(str, listPOs)))
+        self.saveButton.setEnabled(True)
+       
         
         #Close Window
         POAppWindow.close()
         homeAppWindow.show()
 
     def savePO(self):
+        ##Cleanup data for DB
+        dataToPush = self.model._data[:-1]
+        uniqueIDs = ['{}-{}'.format(self.poField.currentText(),x) for x in dataToPush.index]
+        print('NON CRITICAL ERROR HERE')
+        dataToPush['Unique ID'] = uniqueIDs
+        print('\nPushing data to Coin Database...\n\n{}'.format(dataToPush))
+        ##Save Coin Metadata to PurchaseOrderCoins to Database
+        dataToPush.to_csv('Database\Data\purchaseOrderCoins.csv', index=False, header=not os.path.exists('Database\Data\purchaseOrderCoins.csv'), mode='a')
+
+        ##Save PO Metadata
+        pd.DataFrame(data=[[datetime.now(),self.poField.currentText(),self.customerField.currentText(),self.termsField.currentText(),uniqueIDs]],columns=['Date', 'PO', 'Customer', 'Terms', 'UniqueIDs']).to_csv('Database\Data\purchaseOrders.csv', index=False, header=not os.path.exists('Database\Data\purchaseOrders.csv'), mode='a')
+        print('\nPushing to PO Database...\n\n{}\n\nSuccesfully Pushed'.format(pd.DataFrame(data=[[datetime.now(),self.poField.currentText(),self.customerField.currentText(),self.termsField.currentText(),uniqueIDs]],columns=['Date', 'PO', 'Customer', 'Terms', 'UniqueIDs'])))
+
+        #Print Succesful Message
+        self.savedToDBMessage = QMessageBox(self)
+        self.savedToDBMessage.setWindowTitle('PO Creation Succesful.')
+        self.savedToDBMessage.setText('The Purchase Order Information has been succesfully saved to the Database.')
+        self.savedToDBMessage.setIcon(QMessageBox.Icon.Information)
+        self.savedToDBMessage.exec()
 
         ## ADD OTHER GUI FUNCTIONAILITY
+        self.saveButton.setEnabled(False)
         self.phoneLabel = QPushButton('Print PO')
-        self.verticalLabelLayout.addWidget(self.phoneLabel)
-
         self.addressLabel = QPushButton('Print Labels')
-        self.verticalLabelLayout.addWidget(self.addressLabel)
-
         self.printOneLabelButton = QPushButton('Print One Label')
+
+
+        self.verticalLabelLayout.addWidget(self.phoneLabel)
+        self.verticalLabelLayout.addWidget(self.addressLabel)
         self.verticalLabelLayout.addWidget(self.printOneLabelButton)
-
         
         
-
 class newContactApp(QWidget):
     def __init__(self):
         super().__init__()

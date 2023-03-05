@@ -1,0 +1,13 @@
+Date,PO,Customer,Terms,UniqueIDs,
+3/4/2023,100,'','','',
+
+2023-03-04 21:19:04.238888,101,Ricky Cardi,Consignment,['101-001']
+2023-03-04 21:23:45.602669,102,Ricky Cardi,Consignment,[]
+2023-03-04 21:24:16.348554,103,Ricky Cardi,Consignment,"['103-001', '103-002']"
+2023-03-04 21:25:55.493468,104,Ricky Cardi,Consignment,['104-001']
+2023-03-04 21:29:54.582615,105,Ricky Cardi,Consignment,['105-001']
+2023-03-04 21:31:20.698162,106,Ricky Cardi,Consignment,['106-001']
+2023-03-04 21:32:57.169127,107,Ricky Cardi,Consignment,['107-001']
+2023-03-04 21:34:47.327114,108,Ricky Cardi,Consignment,['108-001']
+2023-03-04 21:36:02.341879,109,Ricky Cardi,Consignment,['109-001']
+2023-03-04 21:37:48.912179,110,Ricky Cardi,Consignment,['110-001']
