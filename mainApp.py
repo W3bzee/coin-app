@@ -27,11 +27,6 @@ from Database.getCoinData import *
 from Database.updatePOTable import *
 
 
-
-
-
-
-
 global app
 global loginWindow
 global homeAppWindow
