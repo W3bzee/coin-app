@@ -136,6 +136,10 @@ class loginScreen(QWidget):
         layout.addStretch(1)
         self.setLayout(layout)
 
+
+        self.installEventFilter(self)
+
+
     """DEFINE FUNCTIONS"""
     def login(self):
         username = self.unInput.text()
@@ -182,6 +186,13 @@ class loginScreen(QWidget):
             self.failRegisterPopup.setText('Incorrect Login. Please try again.')
             self.failRegisterPopup.setIcon(QMessageBox.Icon.Critical)
             self.failRegisterPopup.exec()
+
+    """BEGIN EVENT FILTER"""    
+    def eventFilter(self, source, event):
+
+        if event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
+           self.login() 
+        return super().eventFilter(source,event)
 
 
 class homeApp(QWidget):
@@ -306,7 +317,7 @@ class POApp(QWidget):
         self.customerLabel = QLabel('Customer')
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.customerField = QComboBox()
-        self.customerField.addItems(['Ricky Cardi','Nathan Lebherz','Anthony Cardi'])
+        self.customerField.addItems([str(x) for x in pd.read_csv('Database\Data\contacts.csv')['customer']])
 
         self.termsLabel = QLabel('Terms')
         self.termsLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -337,7 +348,6 @@ class POApp(QWidget):
         self.table.setColumnWidth(1,200)
         self.table.setColumnWidth(7,200)
         self.table.setColumnWidth(8,200)
-        
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -401,7 +411,7 @@ class POApp(QWidget):
             if not self.printOneLabelButton.isHidden():
                 self.printOneLabelButton.setHidden(not self.printOneLabelButton.isHidden())
         except AttributeError as ae:
-            print('Good to go dawg')
+            print('HANDLED: {}'.format(ae))
         self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
         listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
@@ -512,6 +522,7 @@ class newContactApp(QWidget):
         newContactButtonsLayout = QHBoxLayout()
 
         self.saveNewContactButton = QPushButton('Save')
+        self.saveNewContactButton.clicked.connect(self.saveNewContact)
 
         newContactButtonsLayout.addStretch(1)
         newContactButtonsLayout.addWidget(self.saveNewContactButton)
@@ -535,6 +546,15 @@ class newContactApp(QWidget):
 
 
     """BEGIN FUNCTIONS"""
+    def saveNewContact(self):
+        pd.DataFrame(data=[[self.customerEntry.text(),self.emailEntry.text(),self.phoneEntry.text(),self.addressEntry.text()]]).to_csv('Database\Data\contacts.csv', index=False, header=not os.path.exists('Database\Data\contacts.csv'), mode='a')
+        #Print Succesful Contact Save
+        self.savedContactMessage = QMessageBox(self)
+        self.savedContactMessage.setWindowTitle('Contact Creation Succesful.')
+        self.savedContactMessage.setText('The Contact was saved correctly.\nUnfortunately, you will have to close the application to see this populated in the PO')
+        self.savedContactMessage.setIcon(QMessageBox.Icon.Information)
+        self.savedContactMessage.exec()
+
     def returnHomeScreen(self):
         self.customerEntry.setText('')
         self.emailEntry.setText('')
@@ -563,7 +583,6 @@ loginWindow.show()
 
 app.exec()
 
-print('DID YOU TRY TURNING IT OFF & ON AGAIN')
 
 """
 HELPFUL LINKS:
