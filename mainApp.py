@@ -1,4 +1,3 @@
-import sys
 from PyQt6.QtWidgets import (
     QWidget, QApplication, QVBoxLayout, QPushButton, QHBoxLayout, QDialog, QMessageBox,QInputDialog,
     QTextEdit, QGridLayout, QStackedLayout, QFrame,
@@ -6,35 +5,29 @@ from PyQt6.QtWidgets import (
     QLineEdit, QSpinBox, QDoubleSpinBox, QSlider, QTableWidget
 )
 from PyQt6.QtGui import *
+from PyQt6 import QtCore, QtWidgets
 
-from PyQt6.QtWidgets import QTableWidgetItem
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt, QSize
 
-from PyQt6.QtGui import QIcon, QFont, QPixmap, QMovie, QRegion
-from PyQt6.QtCore import Qt
+"""Import Python Modules"""
+import sys
 import os
+from datetime import datetime, date
 import pandas as pd
-from PyQt6.QtCore import QSize
-
-import pandas as pd
-from PyQt6.QtCore import QAbstractTableModel, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableView
 
 from dotenv import load_dotenv
 load_dotenv()
 unpws = os.getenv('REGISTER')
 unpwFilepath = './assets/unpw.csv'
 
-
+"""Import Functions for Database"""
 from Database.createNewPO import *
 from Database.getCoinData import *
 from Database.updatePOTable import *
 
 
-import sys
-from PyQt6 import QtCore, QtGui, QtWidgets
-from datetime import datetime
-import pandas as pd
-from datetime import date
+
 
 
 
