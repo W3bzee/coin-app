@@ -1,0 +1,56 @@
+QWidget {
+    font-size: 26px;
+    background-color: rgb(189, 186, 186);
+    border-radius: 10px;
+    font: 'Sans Serif';
+}
+
+QPushButton {
+        background-color: #1a66f4;
+        border-style: outset;
+        border-width: 2px;
+        border-radius: 10px;
+        border-color: rgb(0, 0, 0);
+        font: bold 18px;
+        color: white;
+        min-width: 150px;
+        padding: 6px;
+        margin-right: 375px;
+
+}
+
+QPushButton:hover {
+    background-color: #F4A81A;
+
+}
+
+QLineEdit {
+    border: 3px solid black;
+    margin-right: 375px;
+}
+
+QLabel {
+    padding: 6px;
+    color: rgb(0, 0, 0);
+    max-width: 2000%;
+    margin: 15px;
+    font: 30px;
+}
+
+
+QMessageBox {
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
+    padding: 5px;
+    color: red;
+    max-width: 2000%;
+
+}
+
+QInputDialog {
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
+    padding: 5px;
+    color: red;
+    max-width: 2000%;
+}

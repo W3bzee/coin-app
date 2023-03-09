@@ -89,7 +89,7 @@ class loginScreen(QWidget):
         self.user = QLabel("Login Form:")    
         self.user.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-        self.pwd = QLabel("Password")
+        self.pwd = QLabel("Password:")
         self.pwd.setAlignment(Qt.AlignmentFlag.AlignRight)
         
         self.unInput = QLineEdit()
@@ -117,7 +117,7 @@ class loginScreen(QWidget):
         loginLayout.addWidget(self.pwInput, 2, 1, 1, 2)
         loginLayout.addWidget(self.button1, 3, 1)
         loginLayout.addWidget(self.button2, 3, 2)
-        loginLayout.setContentsMargins(30,30,30,30)
+        #loginLayout.setContentsMargins(30,30,30,30)
         loginLayout.setSpacing(10)
         
         layout.addLayout(loginLayout)
@@ -136,9 +136,10 @@ class loginScreen(QWidget):
             self.unInput.clear()
             self.pwInput.clear()
             loginWindow.close()
-            homeAppWindow.show()
-            with open("styles.css","r") as file:
+            with open("stylesheets\homeStyles.css","r") as file:
                 app.setStyleSheet(file.read())
+            homeAppWindow.show()
+
              
             
         else:
@@ -149,10 +150,8 @@ class loginScreen(QWidget):
                                       \nplease click the register button. ')
             self.noLoginPopup.setIcon(QMessageBox.Icon.Warning)
             self.noLoginPopup.setStyleSheet('''QLabel {
-            border: 2px solid rgb(11, 11, 11);
-            border-radius: 4px;
+            border: 2px solid red;
             padding: 2px;
-            color: rgb(255, 42, 0);
             max-width: 2000%;
             }''')
             self.noLoginPopup.exec()
@@ -167,17 +166,26 @@ class loginScreen(QWidget):
             self.registerPopup.setText('User {} succesfully added!\
                                       \nAttempt to Login Now'.format(self.unInput.text()))
             self.registerPopup.setIcon(QMessageBox.Icon.Information)
+            self.registerPopup.setStyleSheet('''QLabel {
+            border: 2px solid red;
+            padding: 2px;
+            max-width: 2000%;
+            }''')
             self.registerPopup.exec()
         else:
             self.failRegisterPopup = QMessageBox(self)
             self.failRegisterPopup.setWindowTitle('Registration Unsuccessful.')
             self.failRegisterPopup.setText('Incorrect Login. Please try again.')
             self.failRegisterPopup.setIcon(QMessageBox.Icon.Critical)
+            self.failRegisterPopup.setStyleSheet('''QLabel {
+            border: 2px solid red;
+            padding: 2px;
+            max-width: 2000%;
+            }''')
             self.failRegisterPopup.exec()
 
     """BEGIN EVENT FILTER"""    
     def eventFilter(self, source, event):
-
         if event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
            self.login() 
         return super().eventFilter(source,event)
@@ -206,30 +214,49 @@ class homeApp(QWidget):
         #Title
         self.Title = QLabel('Third Coast \nSupply Company LLC')
         self.Title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Title.setStyleSheet("""
+        border: 2px solid rgb(189, 186, 186)
+        """) 
         titleLayout.addWidget(self.Title)
 
+
         # New Invoice
-        self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "New Invoice", self)
+        self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "", self)
         self.newInvoiceButton.setGeometry(0, 0, 200, 200)
         self.newInvoiceButton.setIconSize(QSize(100,100))
 
+        # New Invoice Label
+        self.newInvoiceLabel = QLabel('New Invoice')
+        self.newInvoiceLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         # New Purchase Order
-        self.newPurchaseOrder = QPushButton(QIcon("assets/coin.ico"), "New Purchase Order", self)
+        self.newPurchaseOrder = QPushButton(QIcon("assets/coin.ico"), "", self)
         self.newPurchaseOrder.setGeometry(0, 0, 200, 200)
         self.newPurchaseOrder.setIconSize(QSize(100,100))
         self.newPurchaseOrder.clicked.connect(self.newPO)
 
+        # New Purchase Label
+        self.newPurchaseOrderLabel = QLabel('New Purchase Order')
+        self.newPurchaseOrderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         # New Contact
-        self.newContact = QPushButton(QIcon("assets/coin.ico"), "New Contact", self)
+        self.newContact = QPushButton(QIcon("assets/coin.ico"), "", self)
         self.newContact.setGeometry(0, 0, 200, 200)
         self.newContact.setIconSize(QSize(100,100))
         self.newContact.clicked.connect(self.newContactFunc)
+
+        # New Contact Label
+        self.newContactLabel = QLabel('New Contact')
+        self.newContactLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         # Run Report
-        self.runReport = QPushButton(QIcon("assets/coin.ico"), "Run Report", self)
+        self.runReport = QPushButton(QIcon("assets/coin.ico"), "", self)
         self.runReport.setGeometry(0, 0, 100, 200)
         self.runReport.setIconSize(QSize(100,100))
 
-
+        # Run Report Label
+        self.runReportLabel = QLabel('Run Report')
+        self.runReportLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         #START PAGE LAYOUT
 
         # add buttons to horizontal layout
@@ -238,11 +265,15 @@ class homeApp(QWidget):
         hbox.addWidget(self.newContact)
         hbox.addWidget(self.runReport)
 
+        hbox2.addWidget(self.newInvoiceLabel)
+        hbox2.addWidget(self.newPurchaseOrderLabel)
+        hbox2.addWidget(self.newContactLabel)
+        hbox2.addWidget(self.runReportLabel)
+
         # add horizontal layout to vertical layout
         vbox.addLayout(logoutLayout)
         vbox.addLayout(titleLayout)
         vbox.addStretch(1)
-
         vbox.addLayout(hbox)
         vbox.addLayout(hbox2)
         vbox.addStretch(1)
@@ -254,14 +285,20 @@ class homeApp(QWidget):
     """Define Functions"""
     def logout(self):
         homeAppWindow.close()
+        with open("stylesheets\loginStyles.css","r") as file:
+            app.setStyleSheet(file.read())
         loginWindow.show()
 
     def newPO(self):
         homeAppWindow.close()
+        with open("stylesheets\poStyles.css","r") as file:
+            app.setStyleSheet(file.read())
         POAppWindow.show()
     
     def newContactFunc(self):
         homeAppWindow.close()
+        with open("stylesheets\contactStyles.css","r") as file:
+            app.setStyleSheet(file.read())
         newContactWindow.show()
     
 
@@ -284,6 +321,10 @@ class POApp(QWidget):
         #Top Label
         self.topLabel = QLabel('Third Coast\nSupply Company LLC')
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.topLabel.setStyleSheet("""
+        border: 2px solid rgb(189, 186, 186)
+        """)
+
 
 
         #Selector Field
@@ -293,9 +334,8 @@ class POApp(QWidget):
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.dateField = QtWidgets.QDateEdit(calendarPopup=True,date=date.today())
 
-        
         self.poLabel = QLabel('PO')
-        self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)        
         self.poField = QComboBox()
         listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
         listPOs = listPOs + [pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].iloc[-1]+1]
@@ -412,7 +452,10 @@ class POApp(QWidget):
         
         #Close Window
         POAppWindow.close()
+        with open("stylesheets/homeStyles.css","r") as file:
+            app.setStyleSheet(file.read())
         homeAppWindow.show()
+
 
     def savePO(self):
         ##Cleanup data for DB
@@ -464,6 +507,9 @@ class newContactApp(QWidget):
         #Top Label
         self.topLabel = QLabel('Third Coast \nSupply Company LLC')
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.topLabel.setStyleSheet("""
+        border: 2px solid rgb(189, 186, 186)
+        """)
 
         #Customer Label & Info
         customerBoxLayout = QHBoxLayout()
@@ -476,29 +522,37 @@ class newContactApp(QWidget):
         self.customerLabel = QLabel('Customer:')
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.customerEntry = QLineEdit()
+        customerBoxLayout.addStretch(1)
         customerBoxLayout.addWidget(self.customerLabel)
         customerBoxLayout.addWidget(self.customerEntry)
+        customerBoxLayout.addStretch(1)
 
         #Email
         self.emailLabel = QLabel('Email:')
         self.emailLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.emailEntry = QLineEdit()
+        emailBoxLayout.addStretch(1)
         emailBoxLayout.addWidget(self.emailLabel)
         emailBoxLayout.addWidget(self.emailEntry)
+        emailBoxLayout.addStretch(1)
 
         #Phone
         self.phoneLabel = QLabel('Phone:')
         self.phoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.phoneEntry = QLineEdit()
+        phoneBoxLayout.addStretch(1)
         phoneBoxLayout.addWidget(self.phoneLabel)
         phoneBoxLayout.addWidget(self.phoneEntry)
+        phoneBoxLayout.addStretch(1)
 
         #Address
         self.addressLabel = QLabel('Address:')
         self.addressLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.addressEntry = QLineEdit()
+        AddressBoxLayout.addStretch(1)
         AddressBoxLayout.addWidget(self.addressLabel)
         AddressBoxLayout.addWidget(self.addressEntry)  
+        AddressBoxLayout.addStretch(1)
 
         #Vertical Entries
         verticalLayout.addLayout(customerBoxLayout)
@@ -542,6 +596,7 @@ class newContactApp(QWidget):
         self.savedContactMessage.setText('The Contact was saved correctly.\nUnfortunately, you will have to close the application to see this populated in the PO')
         self.savedContactMessage.setIcon(QMessageBox.Icon.Information)
         self.savedContactMessage.exec()
+        #os.execl(sys.executable, sys.executable, *sys.argv)
 
     def returnHomeScreen(self):
         self.customerEntry.setText('')
@@ -549,6 +604,8 @@ class newContactApp(QWidget):
         self.phoneEntry.setText('')
         self.addressEntry.setText('')
         newContactWindow.close()
+        with open("stylesheets/homeStyles.css","r") as file:
+            app.setStyleSheet(file.read())
         homeAppWindow.show()
 
 
@@ -556,7 +613,7 @@ class newContactApp(QWidget):
 """CALL APPLICATION"""
 
 app = QApplication([])
-with open("stylesContactApp.css","r") as file:
+with open("stylesheets/loginStyles.css","r") as file:
     app.setStyleSheet(file.read())
 
 loginWindow = loginScreen()
