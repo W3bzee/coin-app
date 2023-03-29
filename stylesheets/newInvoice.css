@@ -1,0 +1,47 @@
+QWidget {
+    font-size: 22px;
+    background-color: rgb(189, 186, 186);
+    
+}
+
+QPushButton {
+        background-color: #1a66f4;
+        border-style: outset;
+        border-width: 2px;
+        border-radius: 10px;
+        border-color: beige;
+        font: bold 18px;
+        min-width: 10px;
+        padding: 6px;
+        min-width: 150px;
+}
+
+QPushButton:hover {
+    background-color: #F4A81A;
+
+}
+
+
+QLabel {
+    border: 2px solid blue;
+    font: bold;
+    border-radius: 4px;
+    padding: 6px;
+    color: rgb(0, 0, 0);
+    max-width: 2000%;
+    margin: 15px 0px 15px 0px;
+    min-width: 150px;
+    
+}
+
+QComboBox {
+    padding: 6px;
+
+}
+
+
+QMessageBox {
+    border: 2px solid red;
+    background-color: yellow;
+    padding: 5px;
+}

@@ -186,7 +186,7 @@ class loginScreen(QWidget):
 
     """BEGIN EVENT FILTER"""    
     def eventFilter(self, source, event):
-        if event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
+        if event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220: 
            self.login() 
         return super().eventFilter(source,event)
 
@@ -224,6 +224,7 @@ class homeApp(QWidget):
         self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "", self)
         self.newInvoiceButton.setGeometry(0, 0, 200, 200)
         self.newInvoiceButton.setIconSize(QSize(100,100))
+        self.newInvoiceButton.clicked.connect(self.newInvoice)
 
         # New Invoice Label
         self.newInvoiceLabel = QLabel('New Invoice')
@@ -289,6 +290,12 @@ class homeApp(QWidget):
             app.setStyleSheet(file.read())
         loginWindow.show()
 
+    def newInvoice(self):
+        homeAppWindow.close()
+        with open("stylesheets\poStyles.css","r") as file:
+            app.setStyleSheet(file.read())
+        newInvoiceWindow.show()
+        
     def newPO(self):
         homeAppWindow.close()
         with open("stylesheets\poStyles.css","r") as file:
@@ -300,7 +307,188 @@ class homeApp(QWidget):
         with open("stylesheets\contactStyles.css","r") as file:
             app.setStyleSheet(file.read())
         newContactWindow.show()
-    
+
+
+class newInvoiceApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('New Invoice')
+        self.setWindowIcon(QIcon('assets\coin.ico'))
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+
+        """BEGIN WIDGITS"""
+        #Back Button
+        backButton = QPushButton(QIcon("assets\FreeWebToolkit_1677391325.ico"),"", self)
+        backButton.setGeometry(0, 0, 75, 100)
+        backButton.setIconSize(QSize(80,80))
+        backButton.clicked.connect(self.returnHomeScreen)
+        
+
+        #Top Label
+        self.topLabel = QLabel('Third Coast\nSupply Company LLC')
+        self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.topLabel.setStyleSheet("""
+        border: 2px solid rgb(189, 186, 186)
+        """)
+
+        #Selector Field
+        selectorFieldLayout = QHBoxLayout()
+
+        self.dateFieldLabel = QLabel('Date')
+        self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.dateField = QtWidgets.QDateEdit(calendarPopup=True,date=date.today())
+
+        self.poLabel = QLabel('Inv #')
+        self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)        
+        self.poField = QComboBox()
+        df = pd.read_csv('Database\Data\invoices.csv')
+        listPOs = [x for x in pd.read_csv('Database\Data\invoices.csv')['Invoice'].values]
+        listPOs = listPOs + [pd.read_csv('Database\Data\invoices.csv')['Invoice'].iloc[-1]+1]
+        listPOs = sorted(listPOs, reverse=True)
+        self.poField.addItems(list(map(str, listPOs)))
+
+        self.customerLabel = QLabel('Customer')
+        self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.customerField = QComboBox()
+        self.customerField.addItems([str(x) for x in pd.read_csv('Database\Data\contacts.csv')['customer']])
+
+        self.termsLabel = QLabel('Terms')
+        self.termsLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.termsField = QComboBox()
+        self.termsField.addItems(['Immediate', 'Approval' , 'Time to Pay'])
+
+        selectorFieldLayout.addStretch(1)
+        selectorFieldLayout.addWidget(self.dateFieldLabel)
+        selectorFieldLayout.addWidget(self.dateField)
+        selectorFieldLayout.addWidget(self.poLabel)
+        selectorFieldLayout.addWidget(self.poField)
+        selectorFieldLayout.addWidget(self.customerLabel)
+        selectorFieldLayout.addWidget(self.customerField)
+        selectorFieldLayout.addWidget(self.termsLabel)
+        selectorFieldLayout.addWidget(self.termsField)
+        selectorFieldLayout.addStretch(1)
+
+        #PO TABLE & BUTTONS
+        bigHorizontalLayout = QHBoxLayout()
+        self.verticalLabelLayout = QVBoxLayout()
+
+        #Begin PO Table
+        self.table = QtWidgets.QTableView()
+        ### USE HELPER PANDAS CLASS
+        self.model = PandasModel(createNewPOfunc())
+        self.table.setModel(self.model)
+        self.table.installEventFilter(self)
+        self.table.setColumnWidth(1,200)
+        self.table.setColumnWidth(7,200)
+        self.table.setColumnWidth(8,200)
+
+        #Vertical Buttons
+        self.saveButton = QPushButton('Save')
+        self.saveButton.clicked.connect(self.saveInvoice)
+        self.verticalLabelLayout.addWidget(self.saveButton)
+
+        bigHorizontalLayout.addWidget(self.table)
+        bigHorizontalLayout.addLayout(self.verticalLabelLayout)
+
+
+
+        #Set window layout
+        pageLayout = QVBoxLayout()
+        topLayout = QHBoxLayout()
+
+
+        topLayout.addWidget(backButton)
+        topLayout.addStretch(1)
+
+        #Begin page layout
+        pageLayout.addLayout(topLayout)
+        pageLayout.addWidget(self.topLabel)
+        pageLayout.addStretch(1)
+        pageLayout.addLayout(selectorFieldLayout)
+        pageLayout.addLayout(bigHorizontalLayout)
+
+
+        pageLayout.addStretch(5)
+        self.setLayout(pageLayout)
+
+    """BEGIN EVENT FILTER"""
+    def eventFilter(self, source, event):
+        if source == self.table and event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
+            try:
+                tableEntry = self.model._data['PCGS #'].iloc[-1]
+                newDF = updateTable(pd.DataFrame(self.model._data),tableEntry)
+                newDF = pd.concat([newDF, createNewPOfunc()])
+                newIndex = ['{:03d}'.format(i) for i in range(1, len(newDF)+1)]
+                newDF.index = newIndex
+                self.model = PandasModel(newDF)
+                self.table.setModel(self.model)
+                self.table.installEventFilter(self)
+                self.table.setColumnWidth(1,200)
+                self.table.setColumnWidth(7,200)
+                self.table.setColumnWidth(8,200)
+
+            except IndexError:
+                print(IndexError)
+            except ValueError:
+                print(ValueError)
+        return super().eventFilter(source,event)
+
+    """BEGIN FUNCTIONS"""
+    def returnHomeScreen(self):
+        #Clear Data
+        try:
+            if not self.phoneLabel.isHidden():
+                self.phoneLabel.setHidden(not self.phoneLabel.isHidden())
+            if not self.addressLabel.isHidden():
+                self.addressLabel.setHidden(not self.addressLabel.isHidden())
+            if not self.printOneLabelButton.isHidden():
+                self.printOneLabelButton.setHidden(not self.printOneLabelButton.isHidden())
+        except AttributeError as ae:
+            print('HANDLED: {}'.format(ae))
+        self.model = PandasModel(createNewPOfunc())
+        self.table.setModel(self.model)
+        listPOs = [x for x in pd.read_csv('Database\Data\invoices.csv')['Invoice'].values]
+        listPOs = listPOs + [pd.read_csv('Database\Data\invoices.csv')['Invoice'].iloc[-1]+1]
+        listPOs = sorted(listPOs, reverse=True)
+        self.poField.clear()
+        self.poField.addItems(list(map(str, listPOs)))
+        self.saveButton.setEnabled(True)
+       
+        
+        #Close Window
+        newInvoiceWindow.close()
+        with open("stylesheets/homeStyles.css","r") as file:
+            app.setStyleSheet(file.read())
+        homeAppWindow.show()
+
+
+    def saveInvoice(self):
+        ##Cleanup data for DB
+        #dataToPush = self.model._data[:-1]
+        #uniqueIDs = ['{}-{}'.format(self.poField.currentText(),x) for x in dataToPush.index]
+        #dataToPush['Unique ID'] = uniqueIDs
+        #print('\nPushing data to Invoice Database...\n\n{}'.format(dataToPush))
+        ##Save Invoice Data to Invoices Database
+        #dataToPush.to_csv('Database\Data\invoices.csv', index=False, header=not os.path.exists('Database\Data\invoices.csv'), mode='a')
+
+        ##Remove PO Metadata
+        #pd.DataFrame(data=[[datetime.now(),self.poField.currentText(),self.customerField.currentText(),self.termsField.currentText(),uniqueIDs]],columns=['Date', 'PO', 'Customer', 'Terms', 'UniqueIDs']).to_csv('Database\Data\purchaseOrders.csv', index=False, header=not os.path.exists('Database\Data\purchaseOrders.csv'), mode='a')
+        #print('\nPushing to PO Database...\n\n{}\n\nSuccesfully Pushed'.format(pd.DataFrame(data=[[datetime.now(),self.poField.currentText(),self.customerField.currentText(),self.termsField.currentText(),uniqueIDs]],columns=['Date', 'PO', 'Customer', 'Terms', 'UniqueIDs'])))
+
+        #Print Succesful Message
+        self.savedToDBMessage = QMessageBox(self)
+        self.savedToDBMessage.setWindowTitle('Invoice Creation Succesful.')
+        self.savedToDBMessage.setText('The Invoice has been succesfully saved to the Database.')
+        self.savedToDBMessage.setIcon(QMessageBox.Icon.Information)
+        self.savedToDBMessage.exec()
+
+        ## ADD OTHER GUI FUNCTIONAILITY
+        self.saveButton.setEnabled(False)
+        self.addressLabel = QPushButton('Print Labels')
+
+        self.verticalLabelLayout.addWidget(self.addressLabel)
+        
 
 class POApp(QWidget):
     def __init__(self):
@@ -618,6 +806,7 @@ with open("stylesheets/loginStyles.css","r") as file:
 
 loginWindow = loginScreen()
 homeAppWindow = homeApp()
+newInvoiceWindow = newInvoiceApp()
 POAppWindow = POApp()
 newContactWindow = newContactApp()
 
@@ -625,8 +814,10 @@ loginWindow.show()
 #homeAppWindow.show()
 #POAppWindow.show()
 #newContactWindow.show()
+#newInvoiceWindow.show()
 
 app.exec()
+
 
 
 """
