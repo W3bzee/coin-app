@@ -540,6 +540,12 @@ class POApp(QWidget):
         self.termsField = QComboBox()
         self.termsField.addItems(['Consignment','Sold','Split'])
 
+        """ NEW """
+        # Create a button to trigger the popup window
+        self.newCoinButton = QPushButton('Add New Coin')
+        self.newCoinButton.clicked.connect(self.show_popup)
+        """ NEW """
+
         selectorFieldLayout.addStretch(1)
         selectorFieldLayout.addWidget(self.dateFieldLabel)
         selectorFieldLayout.addWidget(self.dateField)
@@ -550,6 +556,7 @@ class POApp(QWidget):
         selectorFieldLayout.addWidget(self.termsLabel)
         selectorFieldLayout.addWidget(self.termsField)
         selectorFieldLayout.addStretch(1)
+        selectorFieldLayout.addWidget(self.newCoinButton)
 
         #PO TABLE & BUTTONS
         bigHorizontalLayout = QHBoxLayout()
@@ -572,7 +579,6 @@ class POApp(QWidget):
 
         bigHorizontalLayout.addWidget(self.table)
         bigHorizontalLayout.addLayout(self.verticalLabelLayout)
-
 
 
         #Set window layout
@@ -617,6 +623,20 @@ class POApp(QWidget):
         return super().eventFilter(source,event)
 
     """BEGIN FUNCTIONS"""
+    """ NEW """
+    def show_popup(self):
+        # Create a popup window to get user input
+        text, ok = QInputDialog.getMultiLineText(self, 'Enter Coin Information', 'Please Enter the Coin Information',
+                                                 'Pcgs_no: \nCountry: \nCoin_date: \nDenomination: \nVariety: \nPrefix: \nSuffix: \nQty_Minted: \nReference_no: \nRowLastUpdated: \ncoin_no: \nService: ')
+
+        # Check if the user clicked 'OK' and retrieve the entered text
+        if ok:
+            coinData = text.split('\n')
+            coinData = [print(x.split(': ').pop(1)) for x in coinData]
+            print(f'Coin Data:\n {coinData}')
+
+        """ NEW """
+
     def returnHomeScreen(self):
         #Clear Data
         try:
