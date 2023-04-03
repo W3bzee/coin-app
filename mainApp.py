@@ -540,11 +540,11 @@ class POApp(QWidget):
         self.termsField = QComboBox()
         self.termsField.addItems(['Consignment','Sold','Split'])
 
-        """ NEW """
+
         # Create a button to trigger the popup window
         self.newCoinButton = QPushButton('Add New Coin')
         self.newCoinButton.clicked.connect(self.show_popup)
-        """ NEW """
+
 
         selectorFieldLayout.addStretch(1)
         selectorFieldLayout.addWidget(self.dateFieldLabel)
@@ -603,6 +603,7 @@ class POApp(QWidget):
     """BEGIN EVENT FILTER"""
     def eventFilter(self, source, event):
         if source == self.table and event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
+            print(event.type())
             try:
                 tableEntry = self.model._data['PCGS #'].iloc[-1]
                 newDF = updateTable(pd.DataFrame(self.model._data),tableEntry)
@@ -628,14 +629,16 @@ class POApp(QWidget):
         # Create a popup window to get user input
         text, ok = QInputDialog.getMultiLineText(self, 'Enter Coin Information', 'Please Enter the Coin Information',
                                                  'Pcgs_no: \nCountry: \nCoin_date: \nDenomination: \nVariety: \nPrefix: \nSuffix: \nQty_Minted: \nReference_no: \nRowLastUpdated: \ncoin_no: \nService: ')
-
         # Check if the user clicked 'OK' and retrieve the entered text
         if ok:
             coinData = text.split('\n')
-            coinData = [print(x.split(': ').pop(1)) for x in coinData]
-            print(f'Coin Data:\n {coinData}')
+            coinData = [x.split(': ').pop(1) for x in coinData]
+            #Reformat CoinData
+            coinDataDF = pd.DataFrame({'Pcgs_no':coinData[0],'Country':coinData[1],'Coin_date':coinData[2],'Denomination':coinData[3],'Variety':coinData[4],'Prefix':coinData[5],'Suffix':coinData[6],'Qty_Minted':coinData[7],'Reference_no':coinData[8],'RowLastUpdated':coinData[9],'coin_no':coinData[10],'Service':coinData[11]},index=[0])
+            print('\nPushing data to Coin Database...\n\n{}'.format(coinDataDF))
+            #Write the coin data to the CoinDB
+            coinDataDF.to_csv('Database\Data\coinDB.csv', index=False, header=not os.path.exists('Database\Data\coinDB.csv'), mode='a')
 
-        """ NEW """
 
     def returnHomeScreen(self):
         #Clear Data
