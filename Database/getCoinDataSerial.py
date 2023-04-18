@@ -29,9 +29,9 @@ def getCoinDataSerial(serial):
     row = coinDB[coinDB['Pcgs_no'] == Pcgs_no][coinDB['Service']==service]
 
     if row.empty:
-        dataToAppend = {'PCGS #':'','Description':'','CAC':'','Cost':'','Price':'','Certification ID':'','Addl. Description':''}
+        dataToAppend = {'PCGS #':'','Description':'','Grade':'','Service':'','CAC':'','Cost':'','Price':'','Certification ID':'','Addl. Description':''}
 
-    dataToAppend = {'PCGS #':Pcgs_no,'Description':f'{0}-{Grade}-{service}'.format(row['Denomination'].iloc[0]),'CAC':'','Cost':'','Price':'','Certification ID':Certification_ID_num,'Addl. Description':row['coin_no'].iloc[0]}
-    newCoinDF = pd.DataFrame(data=dataToAppend,columns=['PCGS #','Description','CAC','Cost','Price','Certification ID','Addl. Description'],index=['001'])
+    dataToAppend = {'PCGS #':Pcgs_no,'Description':row['Coin_date_Denomination_Variety'].iloc[0],'Grade':Grade,'Service':service,'CAC':'','Cost':'','Price':'','Certification ID':Certification_ID_num,'Addl. Description':row['coin_no'].iloc[0]}
+    newCoinDF = pd.DataFrame(data=dataToAppend,columns=['PCGS #','Description','Grade','Service','CAC','Cost','Price','Certification ID','Addl. Description'],index=['001'])
 
     return newCoinDF
