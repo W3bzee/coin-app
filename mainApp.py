@@ -351,6 +351,12 @@ class homeApp(QWidget):
         self.Test.setIconSize(QSize(100,100))
         self.Test.clicked.connect(self.testerFunc)
 
+        # Printer Test Page
+        self.PrinterTest = QPushButton("Printer Test", self)
+        self.PrinterTest.setGeometry(0, 0, 100, 200)
+        self.PrinterTest.setIconSize(QSize(100,100))
+        self.PrinterTest.clicked.connect(self.printerTesterFunc)
+
         #START PAGE LAYOUT
 
         # add buttons to horizontal layout
@@ -372,9 +378,14 @@ class homeApp(QWidget):
         vbox.addLayout(hbox2)
         vbox.addStretch(1)
         hbox3 = QHBoxLayout()
+        hbox4 = QHBoxLayout()
         hbox3.addWidget(self.Test)
+        hbox4.addWidget(self.PrinterTest)
         hbox3.addStretch(4)
+        hbox4.addStretch(4)
         vbox.addLayout(hbox3)
+        vbox.addSpacing(10)
+        vbox.addLayout(hbox4)
         vbox.addStretch(1)
 
         # set the main layout
@@ -409,6 +420,10 @@ class homeApp(QWidget):
     def testerFunc(self):
         homeAppWindow.close()
         scannerTesterWindow.show()
+
+    def printerTesterFunc(self):
+        homeAppWindow.close()
+        PrinterTesterWindow.show()
 
 
 class newInvoiceApp(QWidget):
@@ -889,7 +904,6 @@ class POApp(QWidget):
         return 
 
 
-
 class newContactApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -1061,6 +1075,36 @@ class ScannerTesterApp(QWidget):
         homeAppWindow.show()
 
 
+class PrinterTesterApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        """BEGIN WIDGITS"""
+        #Back Button
+        hbox = QHBoxLayout()
+        backButton = QPushButton(QIcon("assets\FreeWebToolkit_1677391325.ico"),"", self)
+        backButton.setGeometry(0, 0, 75, 100)
+        backButton.setIconSize(QSize(80,80))
+        backButton.clicked.connect(self.returnHomeScreen)
+
+        vbox = QVBoxLayout()
+        # create a label in the center
+
+
+        #Place Widgets
+        hbox.addWidget(backButton)
+        hbox.addStretch(7)
+        vbox.addLayout(hbox)
+        vbox.addStretch(7)
+        self.setLayout(vbox)
+
+
+    def returnHomeScreen(self):
+        PrinterTesterWindow.close()
+        with open("stylesheets/homeStyles.css","r") as file:
+            app.setStyleSheet(file.read())
+        homeAppWindow.show()
 
 """CALL APPLICATION"""
 
@@ -1074,6 +1118,7 @@ newInvoiceWindow = newInvoiceApp()
 POAppWindow = POApp()
 newContactWindow = newContactApp()
 scannerTesterWindow = ScannerTesterApp()
+PrinterTesterWindow = PrinterTesterApp()
 
 loginWindow.show()
 #homeAppWindow.show()
