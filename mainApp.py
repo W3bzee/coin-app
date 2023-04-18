@@ -482,8 +482,9 @@ class newInvoiceApp(QWidget):
         self.table.setModel(self.model)
         self.table.installEventFilter(self)
         self.table.setColumnWidth(1,200)
-        self.table.setColumnWidth(5,200)
-        self.table.setColumnWidth(6,200)
+        self.table.setColumnWidth(1,30)
+        self.table.setColumnWidth(7,200)
+        self.table.setColumnWidth(8,200)
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
