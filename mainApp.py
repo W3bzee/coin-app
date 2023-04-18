@@ -25,6 +25,16 @@ unpwFilepath = './assets/unpw.csv'
 from Database.createNewPO import *
 from Database.getCoinData import *
 from Database.updatePOTable import *
+#Serial Functions
+from Database.updatePOTableSerial import *
+from Database.getCoinDataSerial import *
+
+import sys
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPainter
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
+from win32com.client import Dispatch
+
 
 
 global app
@@ -32,6 +42,82 @@ global loginWindow
 global homeAppWindow
 global POAppWindow
 global verticalLabelLayout
+
+eventList = ['Type.ChildPolished',
+'Type.StyleChange',
+'Type.ParentChange',
+'Type.Polish',
+'Type.DynamicPropertyChange',
+'Type.FontChange',
+'Type.PaletteChange',
+'Type.ChildPolished',
+'Type.ChildPolished',
+'Type.PolishRequest',
+'Type.MetaCall',
+'Type.Resize',
+'Type.Timer',
+'Type.MetaCall',
+'Type.Timer',
+'Type.Timer',
+'Type.PaletteChange',
+'Type.FontChange',
+'Type.ToolTip',
+'Type.FontChange',
+'Type.PaletteChange',
+'Type.StyleChange',
+'Type.PaletteChange',
+'Type.FontChange',
+'Type.FontChange',
+'Type.PaletteChange',
+'Type.StyleChange',
+'Type.Timer',
+'Type.PaletteChange',
+'Type.FontChange',
+'Type.FontChange',
+'Type.PaletteChange',
+'Type.StyleChange',
+'Type.ContentsRectChange',
+'Type.PaletteChange',
+'Type.FontChange',
+'Type.FontChange',
+'Type.PaletteChange',
+'Type.StyleChange',
+'Type.Move',
+'Type.Wheel'
+'Type.Resize',
+'Type.Show',
+'Type.ShowToParent',
+'Type.WindowActivate',
+'Type.Paint',
+'Type.MetaCall',
+'Type.LayoutRequest',
+'Type.Timer',
+'Type.UpdateLater',
+'Type.Paint',
+'Type.Enter',
+'Type.Paint',
+'Type.Paint',
+'Type.ChildAdded',
+'Type.InputMethodQuery',
+'Type.FocusIn',
+'Type.InputMethodQuery',
+'Type.InputMethodQuery',
+'Type.Paint',
+'Type.Timer',
+'Type.Paint',
+'Type.Leave',
+'Type.FocusAboutToChange',
+'Type.FocusAboutToChange',
+'Type.WindowDeactivate',
+'Type.FocusOut',
+'Type.Paint',
+'Type.KeyPress',
+'Type.KeyRelease',
+'Type.ShortcutOverride',
+'Type.ChildRemoved',
+'Type.Hide',
+'Type.WindowBlocked',
+'Type.WindowUnblocked',]
 
 
 """HELPER CLASSES"""
@@ -258,6 +344,13 @@ class homeApp(QWidget):
         # Run Report Label
         self.runReportLabel = QLabel('Run Report')
         self.runReportLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Scanner Test Page
+        self.Test = QPushButton("Scanner Test", self)
+        self.Test.setGeometry(0, 0, 100, 200)
+        self.Test.setIconSize(QSize(100,100))
+        self.Test.clicked.connect(self.testerFunc)
+
         #START PAGE LAYOUT
 
         # add buttons to horizontal layout
@@ -277,6 +370,11 @@ class homeApp(QWidget):
         vbox.addStretch(1)
         vbox.addLayout(hbox)
         vbox.addLayout(hbox2)
+        vbox.addStretch(1)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(self.Test)
+        hbox3.addStretch(4)
+        vbox.addLayout(hbox3)
         vbox.addStretch(1)
 
         # set the main layout
@@ -307,6 +405,10 @@ class homeApp(QWidget):
         with open("stylesheets\contactStyles.css","r") as file:
             app.setStyleSheet(file.read())
         newContactWindow.show()
+
+    def testerFunc(self):
+        homeAppWindow.close()
+        scannerTesterWindow.show()
 
 
 class newInvoiceApp(QWidget):
@@ -558,6 +660,21 @@ class POApp(QWidget):
         selectorFieldLayout.addStretch(1)
         selectorFieldLayout.addWidget(self.newCoinButton)
 
+        """ BARCODE SECTION """
+        # Bar Code Input
+        self.BarCodeLabel = QLabel('Scan Bar Code:')
+        self.BarCodeInput = QTextEdit()
+        self.BarCodeInput.setMaximumSize(300,50)
+        self.BarCodeButton = QPushButton('Run')
+        self.BarCodeButton.clicked.connect(self.BarCodeRun)
+
+        barcodeLayout = QHBoxLayout()
+        barcodeLayout.addStretch(3)
+        barcodeLayout.addWidget(self.BarCodeLabel)
+        barcodeLayout.addWidget(self.BarCodeInput)
+        barcodeLayout.addWidget(self.BarCodeButton)
+        barcodeLayout.addStretch(3)
+
         #PO TABLE & BUTTONS
         bigHorizontalLayout = QHBoxLayout()
         self.verticalLabelLayout = QVBoxLayout()
@@ -594,6 +711,7 @@ class POApp(QWidget):
         pageLayout.addWidget(self.topLabel)
         pageLayout.addStretch(1)
         pageLayout.addLayout(selectorFieldLayout)
+        pageLayout.addLayout(barcodeLayout)
         pageLayout.addLayout(bigHorizontalLayout)
 
 
@@ -602,8 +720,19 @@ class POApp(QWidget):
 
     """BEGIN EVENT FILTER"""
     def eventFilter(self, source, event):
+        if source == self.table and str(event.type()) not in eventList:
+            self.succesfulConnectionMessage = QMessageBox(self)
+            self.succesfulConnectionMessage.setWindowTitle('Event Popup')
+            self.succesfulConnectionMessage.setText('EVENT #:\n{}'.format(event.type()))
+            self.succesfulConnectionMessage.setIcon(QMessageBox.Icon.Information)
+            self.succesfulConnectionMessage.setStyleSheet('''QLabel {
+            border: 2px solid red;
+            padding: 2px;
+            max-width: 2000%;
+            }''')
+            self.succesfulConnectionMessage.exec()
+
         if source == self.table and event.type() == QKeyEvent.Type.KeyPress and event.key() == 16777220:  #If you are in the table, and click Enter
-            print(event.type())
             try:
                 tableEntry = self.model._data['PCGS #'].iloc[-1]
                 newDF = updateTable(pd.DataFrame(self.model._data),tableEntry)
@@ -624,7 +753,6 @@ class POApp(QWidget):
         return super().eventFilter(source,event)
 
     """BEGIN FUNCTIONS"""
-    """ NEW """
     def show_popup(self):
         # Create a popup window to get user input
         text, ok = QInputDialog.getMultiLineText(self, 'Enter Coin Information', 'Please Enter the Coin Information',
@@ -700,7 +828,31 @@ class POApp(QWidget):
         self.verticalLabelLayout.addWidget(self.addressLabel)
         self.verticalLabelLayout.addWidget(self.printOneLabelButton)
         
+    def BarCodeRun(self):
+        try:
+            tableEntry = self.BarCodeInput.toPlainText()
+            print(len(tableEntry))
+            newDF = updateTableSerial(pd.DataFrame(self.model._data),tableEntry)
+            newDF = pd.concat([newDF, createNewPOfunc()])
+            newIndex = ['{:03d}'.format(i) for i in range(1, len(newDF)+1)]
+            newDF.index = newIndex
+            self.model = PandasModel(newDF)
+            self.table.setModel(self.model)
+            self.table.installEventFilter(self)
+            self.table.setColumnWidth(1,200)
+            self.table.setColumnWidth(7,200)
+            self.table.setColumnWidth(8,200)
+        except IndexError:
+            print(IndexError)
+        except ValueError:
+            print(ValueError)
         
+        self.BarCodeInput.clear()
+        self.BarCodeInput.setFocus()
+        return 
+
+
+
 class newContactApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -820,6 +972,58 @@ class newContactApp(QWidget):
         homeAppWindow.show()
 
 
+class ScannerTesterApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        """BEGIN WIDGITS"""
+        #Back Button
+        hbox = QHBoxLayout()
+        backButton = QPushButton(QIcon("assets\FreeWebToolkit_1677391325.ico"),"", self)
+        backButton.setGeometry(0, 0, 75, 100)
+        backButton.setIconSize(QSize(80,80))
+        backButton.clicked.connect(self.returnHomeScreen)
+
+        vbox = QVBoxLayout()
+        # create a label in the center
+    
+        self.scanBoxLabel = QLabel('Try Scanning Below')
+        self.scanBoxLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # create a QTextEdit widget to display the barcode data
+        self.text_edit = QTextEdit()
+        self.text_edit.setGeometry(0,0,100,100)
+        self.text_edit.setStyleSheet('background-color: #f0f0f0;')
+
+        # create a button to clear the entry form
+        self.labelPrint = QPushButton('Clear Entry Form')
+        self.labelPrint.setGeometry(0, 0, 200, 200)
+        self.labelPrint.setIconSize(QSize(100,100))
+        self.labelPrint.clicked.connect(self.clearData)
+
+        #Place Widgets
+        hbox.addWidget(backButton)
+        hbox.addStretch(4)
+        vbox.addLayout(hbox)
+        vbox.addWidget(self.scanBoxLabel)
+        vbox.addStretch(1)
+        vbox.addWidget(self.text_edit)
+        vbox.addWidget(self.labelPrint)
+        vbox.addStretch(5)
+        self.setLayout(vbox)
+
+    
+    def clearData(self):
+        self.text_edit.clear()
+        self.text_edit.setFocus()
+
+    def returnHomeScreen(self):
+        scannerTesterWindow.close()
+        with open("stylesheets/homeStyles.css","r") as file:
+            app.setStyleSheet(file.read())
+        homeAppWindow.show()
+
+
 
 """CALL APPLICATION"""
 
@@ -832,6 +1036,7 @@ homeAppWindow = homeApp()
 newInvoiceWindow = newInvoiceApp()
 POAppWindow = POApp()
 newContactWindow = newContactApp()
+scannerTesterWindow = ScannerTesterApp()
 
 loginWindow.show()
 #homeAppWindow.show()

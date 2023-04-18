@@ -47,26 +47,19 @@ QComboBox {
 
 
 QMessageBox {
-    border: 2px solid red;
-    background-color: yellow;
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
     padding: 5px;
+    color: red;
+    max-width: 2000%;
+
 }
 
 QInputDialog {
-    border: 2px solid red;
-    background-color: yellow;
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
     padding: 5px;
+    color: red;
+    max-width: 2000%;
 }
 
-
-QMessageBox {
-    border: 2px solid red;
-    background-color: yellow;
-    padding: 5px;
-}
-
-QInputDialog {
-    border: 2px solid red;
-    background-color: yellow;
-    padding: 5px;
-}

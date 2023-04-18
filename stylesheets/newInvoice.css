@@ -41,7 +41,11 @@ QComboBox {
 
 
 QMessageBox {
-    border: 2px solid red;
-    background-color: yellow;
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
     padding: 5px;
+    color: red;
+    max-width: 2000%;
+
 }
+

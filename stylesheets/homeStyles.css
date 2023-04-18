@@ -47,3 +47,7 @@ QInputDialog {
     color: red;
     max-width: 2000%;
 }
+
+QTextEdit {
+    border: 2x solid black;
+}

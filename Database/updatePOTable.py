@@ -10,6 +10,6 @@ def updateTable(df, newPCGSNum):
         newPCGSData = getCoinData(int(newPCGSNum))
         df = df[df['Grade'] != '']
         df = pd.concat([df,getCoinData(int(newPCGSNum))])
-        print(df[df['Grade'] != ''])
+
     return df
 
