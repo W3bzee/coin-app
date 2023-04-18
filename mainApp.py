@@ -482,8 +482,8 @@ class newInvoiceApp(QWidget):
         self.table.setModel(self.model)
         self.table.installEventFilter(self)
         self.table.setColumnWidth(1,200)
-        self.table.setColumnWidth(7,200)
-        self.table.setColumnWidth(8,200)
+        self.table.setColumnWidth(5,200)
+        self.table.setColumnWidth(6,200)
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -686,8 +686,8 @@ class POApp(QWidget):
         self.table.setModel(self.model)
         self.table.installEventFilter(self)
         self.table.setColumnWidth(1,200)
-        self.table.setColumnWidth(7,200)
-        self.table.setColumnWidth(8,200)
+        self.table.setColumnWidth(5,200)
+        self.table.setColumnWidth(6,200)
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
@@ -743,8 +743,8 @@ class POApp(QWidget):
                 self.table.setModel(self.model)
                 self.table.installEventFilter(self)
                 self.table.setColumnWidth(1,200)
-                self.table.setColumnWidth(7,200)
-                self.table.setColumnWidth(8,200)
+                self.table.setColumnWidth(5,200)
+                self.table.setColumnWidth(6,200)
 
             except IndexError:
                 print(IndexError)
@@ -766,9 +766,40 @@ class POApp(QWidget):
             print('\nPushing data to Coin Database...\n\n{}'.format(coinDataDF))
             #Write the coin data to the CoinDB
             coinDataDF.to_csv('Database\Data\coinDB.csv', index=False, header=not os.path.exists('Database\Data\coinDB.csv'), mode='a')
+    
+    def showLeavingPopup(self):
+        self.savedContactMessage = QMessageBox(self)
+        self.savedContactMessage.setWindowTitle('Leave without saving?')
+        self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?')
+        self.savedContactMessage.setIcon(QMessageBox.Icon.Warning)
+        self.savedContactMessage.setStandardButtons(QMessageBox.StandardButton.Retry|
+                               QMessageBox.StandardButton.Ok|
+                               QMessageBox.StandardButton.Cancel)
+        self.savedContactMessage.exec()
 
 
     def returnHomeScreen(self):
+        if self.saveButton.isEnabled() and self.model._data.iloc[0][0] != '':
+            self.savedContactMessage = QMessageBox(self)
+            self.savedContactMessage.setWindowTitle('Leave without saving?')
+            self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?')
+            self.savedContactMessage.setIcon(QMessageBox.Icon.Warning)
+            self.savedContactMessage.setStandardButtons(QMessageBox.StandardButton.Save|QMessageBox.StandardButton.Close|QMessageBox.StandardButton.Cancel)
+            result = self.savedContactMessage.exec()
+            if result == QMessageBox.StandardButton.Save:
+                self.savedContactMessage.close()
+                self.savePO()
+                return
+            elif result == QMessageBox.StandardButton.Close:
+                #Close Window
+                print('closing')
+                with open("stylesheets/homeStyles.css","r") as file:
+                    app.setStyleSheet(file.read())
+                homeAppWindow.show()
+            elif result == QMessageBox.StandardButton.Cancel:
+                self.savedContactMessage.close()
+                return
+
         #Clear Data
         try:
             if not self.phoneLabel.isHidden():
@@ -784,6 +815,7 @@ class POApp(QWidget):
         listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
         listPOs = listPOs + [pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].iloc[-1]+1]
         listPOs = sorted(listPOs, reverse=True)
+        self.BarCodeInput.clear()
         self.poField.clear()
         self.poField.addItems(list(map(str, listPOs)))
         self.saveButton.setEnabled(True)
@@ -813,8 +845,9 @@ class POApp(QWidget):
         #Print Succesful Message
         self.savedToDBMessage = QMessageBox(self)
         self.savedToDBMessage.setWindowTitle('PO Creation Succesful.')
-        self.savedToDBMessage.setText('The Purchase Order Information has been succesfully saved to the Database.')
+        self.savedToDBMessage.setText('The Purchase Order Information\nhas been succesfully saved to the Database.')
         self.savedToDBMessage.setIcon(QMessageBox.Icon.Information)
+        self.savedToDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
         self.savedToDBMessage.exec()
 
         ## ADD OTHER GUI FUNCTIONAILITY
@@ -840,8 +873,8 @@ class POApp(QWidget):
             self.table.setModel(self.model)
             self.table.installEventFilter(self)
             self.table.setColumnWidth(1,200)
-            self.table.setColumnWidth(7,200)
-            self.table.setColumnWidth(8,200)
+            self.table.setColumnWidth(5,200)
+            self.table.setColumnWidth(6,200)
         except IndexError:
             print(IndexError)
         except ValueError:

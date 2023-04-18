@@ -7,7 +7,7 @@ def updateTableSerial(df, serial):
         df = getCoinDataSerial(serial)
     else:
         newPCGSData = getCoinDataSerial(serial)
-        df = df[df['Grade'] != '']
+        df.drop(index=df.index[-1],axis=0,inplace=True)
         df = pd.concat([df,getCoinDataSerial(serial)])
 
     return df
