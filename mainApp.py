@@ -307,7 +307,7 @@ class homeApp(QWidget):
 
 
         # New Invoice
-        self.newInvoiceButton = QPushButton(QIcon("assets/coin.ico"), "", self)
+        self.newInvoiceButton = QPushButton(QIcon("assets/newInvoice.ico"), "", self)
         self.newInvoiceButton.setGeometry(0, 0, 200, 200)
         self.newInvoiceButton.setIconSize(QSize(100,100))
         self.newInvoiceButton.clicked.connect(self.newInvoice)
@@ -317,7 +317,7 @@ class homeApp(QWidget):
         self.newInvoiceLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # New Purchase Order
-        self.newPurchaseOrder = QPushButton(QIcon("assets/coin.ico"), "", self)
+        self.newPurchaseOrder = QPushButton(QIcon("assets/newPO.ico"), "", self)
         self.newPurchaseOrder.setGeometry(0, 0, 200, 200)
         self.newPurchaseOrder.setIconSize(QSize(100,100))
         self.newPurchaseOrder.clicked.connect(self.newPO)
@@ -327,7 +327,7 @@ class homeApp(QWidget):
         self.newPurchaseOrderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # New Contact
-        self.newContact = QPushButton(QIcon("assets/coin.ico"), "", self)
+        self.newContact = QPushButton(QIcon("assets/newContact.ico"), "", self)
         self.newContact.setGeometry(0, 0, 200, 200)
         self.newContact.setIconSize(QSize(100,100))
         self.newContact.clicked.connect(self.newContactFunc)
@@ -337,7 +337,7 @@ class homeApp(QWidget):
         self.newContactLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Run Report
-        self.runReport = QPushButton(QIcon("assets/coin.ico"), "", self)
+        self.runReport = QPushButton(QIcon("assets/runReport.ico"), "", self)
         self.runReport.setGeometry(0, 0, 100, 200)
         self.runReport.setIconSize(QSize(100,100))
 
@@ -481,8 +481,8 @@ class newInvoiceApp(QWidget):
         self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
         self.table.installEventFilter(self)
-        self.table.setColumnWidth(1,200)
-        self.table.setColumnWidth(1,30)
+        self.table.setColumnWidth(1,300)
+        self.table.setColumnWidth(4,30)
         self.table.setColumnWidth(7,200)
         self.table.setColumnWidth(8,200)
 
