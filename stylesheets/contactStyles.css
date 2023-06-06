@@ -10,6 +10,7 @@ QPushButton {
         border-width: 2px;
         border-radius: 10px;
         border-color: beige;
+        color: white;
         font: bold 18px;
         min-width: 10px;
         padding: 6px;
@@ -18,7 +19,8 @@ QPushButton {
 
 QPushButton:hover {
     background-color: #F4A81A;
-
+    font: bold 21px;
+    min-width: 175px;
 }
 
 QLineEdit {
@@ -47,26 +49,24 @@ QComboBox {
 
 
 QMessageBox {
-    border: 2px solid red;
-    background-color: yellow;
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
     padding: 5px;
+    color: red;
+    max-width: 2000%;
+
+}
+
+QMessageBox QLabel {
+    min-width: 200px;
+    margin: 40px 20px;
 }
 
 QInputDialog {
-    border: 2px solid red;
-    background-color: yellow;
+    border: 2px solid #9B2335;
+    background-color: rgb(189, 186, 186);
     padding: 5px;
+    color: red;
+    max-width: 2000%;
 }
 
-
-QMessageBox {
-    border: 2px solid red;
-    background-color: yellow;
-    padding: 5px;
-}
-
-QInputDialog {
-    border: 2px solid red;
-    background-color: yellow;
-    padding: 5px;
-}

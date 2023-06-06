@@ -47,6 +47,12 @@ QMessageBox {
 
 }
 
+QMessageBox QLabel {
+    min-width: 250px;
+    margin: 40px 20px;
+    padding: 5px 20px;
+}
+
 QInputDialog {
     border: 2px solid #9B2335;
     background-color: rgb(189, 186, 186);
