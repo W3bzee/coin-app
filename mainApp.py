@@ -1324,14 +1324,38 @@ class PrinterTesterApp(QWidget):
         backButton.clicked.connect(self.returnHomeScreen)
 
         vbox = QVBoxLayout()
-        # create a label in the center
+        #Top Label
+        self.topLabel = QLabel('Input TCS Inventory Number')
+        self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.topLabel.setStyleSheet("""
+        border: 2px solid rgb(189, 186, 186)
+        """)
 
+        hbox2 = QHBoxLayout()
+
+        self.InvoiceBarCodeLabel2 = QLabel('Scan TCS Bar Code:')
+        self.InvoiceBarCodeInput2 = QTextEdit()
+        self.InvoiceBarCodeInput2.setMaximumSize(300,50)
+        self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
+        self.InvoiceBarCodeRunButton2 = QPushButton('Run')
+        self.InvoiceBarCodeRunButton2.clicked.connect(self.runPrintTest)
+
+        hbox2.addStretch(10)
+        hbox2.addWidget(self.InvoiceBarCodeLabel2)
+        hbox2.addWidget(self.InvoiceBarCodeInput2)
+        hbox2.addWidget(self.InvoiceBarCodeRunButton2)
+        hbox2.addStretch(5)
 
         #Place Widgets
         hbox.addWidget(backButton)
         hbox.addStretch(7)
         vbox.addLayout(hbox)
-        vbox.addStretch(7)
+
+        vbox.addWidget(self.topLabel)
+        vbox.addStretch(1)
+        vbox.addLayout(hbox2)
+
+        vbox.addStretch(10)
         self.setLayout(vbox)
 
 
@@ -1340,6 +1364,37 @@ class PrinterTesterApp(QWidget):
         with open("stylesheets/homeStyles.css","r") as file:
             app.setStyleSheet(file.read())
         homeAppWindow.show()
+
+    def runPrintTest(self):
+        tableEntry = self.InvoiceBarCodeInput2.toPlainText()
+        tableEntry = tableEntry.replace(' ','')
+
+        if tableEntry.__contains__('\n'):
+            tableEntry = tableEntry.replace('\n','')
+            
+        if len(self.InvoiceBarCodeInput2.toPlainText()) == 1:
+            self.InvoiceBarCodeInput2.clear()
+            self.InvoiceBarCodeInput2.setFocus()
+            self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
+            return 
+
+        print(tableEntry)
+        
+        invoiceCoins = pd.read_csv('Database\Data\purchaseOrderCoins.csv')
+        try:
+            invoiceCoins = invoiceCoins[invoiceCoins['UniqueID'] == tableEntry]
+            row = invoiceCoins.iloc[0]
+            print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], tableEntry.split('-')[0],tableEntry.split('-')[1], row[0])
+            printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], tableEntry.split('-')[0],tableEntry.split('-')[1], row[0])
+  
+        except IndexError as IE:
+            print('not available')
+        
+        self.InvoiceBarCodeInput2.clear()
+        self.InvoiceBarCodeInput2.setFocus()
+        self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
+
+        return
 
 
 
@@ -1358,12 +1413,13 @@ inventoryReportWindow = inventoryReportApp()
 scannerTesterWindow = ScannerTesterApp()
 PrinterTesterWindow = PrinterTesterApp()
 
-loginWindow.show()
+#loginWindow.show()
 #homeAppWindow.show()
 #POAppWindow.show()
 #newContactWindow.show()
 #newInvoiceWindow.show()
 #inventoryReportWindow.show()
+PrinterTesterWindow.show()
 
 app.exec()
 
