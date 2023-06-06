@@ -368,6 +368,8 @@ class homeApp(QWidget):
 
     def printerTesterFunc(self):
         homeAppWindow.close()
+        with open('stylesheets\printerTestStyles.css',"r") as file:
+            app.setStyleSheet(file.read())
         PrinterTesterWindow.show()
 
 
@@ -1340,7 +1342,7 @@ class PrinterTesterApp(QWidget):
         self.InvoiceBarCodeRunButton2 = QPushButton('Run')
         self.InvoiceBarCodeRunButton2.clicked.connect(self.runPrintTest)
 
-        hbox2.addStretch(10)
+        hbox2.addStretch(5)
         hbox2.addWidget(self.InvoiceBarCodeLabel2)
         hbox2.addWidget(self.InvoiceBarCodeInput2)
         hbox2.addWidget(self.InvoiceBarCodeRunButton2)
@@ -1413,13 +1415,13 @@ inventoryReportWindow = inventoryReportApp()
 scannerTesterWindow = ScannerTesterApp()
 PrinterTesterWindow = PrinterTesterApp()
 
-#loginWindow.show()
+loginWindow.show()
 #homeAppWindow.show()
 #POAppWindow.show()
 #newContactWindow.show()
 #newInvoiceWindow.show()
 #inventoryReportWindow.show()
-PrinterTesterWindow.show()
+#PrinterTesterWindow.show()
 
 app.exec()
 
