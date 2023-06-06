@@ -1016,7 +1016,7 @@ class POApp(QWidget):
             dataToPrint = dataToPrint[dataToPrint['PCGS #'] != '']
             for index,row in dataToPrint.iterrows():
                 print('Printing Labels for:')
-                print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),'-',index, row[0])
+                print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
                 printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
 
             self.savedToDBMessage = QMessageBox(self)

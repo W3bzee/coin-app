@@ -23,7 +23,6 @@ def getCoinDataSerial(serial):
             row = coinDB[coinDB['coin_no'] == float(serial[0:6])]
             Grade = serial[6:8]
             Certification_ID_num = serial[10:]
-            print(row)
             if row.empty:
                 dataToAppend = {'PCGS #':'','Description':'','Grade':'','Service':'','CAC':'','Cost':'','Price':'','Certification ID':'','Addl. Description':''}
             else:
