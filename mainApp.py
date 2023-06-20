@@ -1460,7 +1460,7 @@ python -m PyInstaller --onefile --windowed mainApp.py
 
 worth a try:
 
-pyinstaller.exe --onefile --windowed --icon=app.ico app.py
+python -m PyInstaller --onefile --windowed --icon=assets\coin.ico mainApp.py
 
 move folders: dist & build
 move file: mainApp.spec
