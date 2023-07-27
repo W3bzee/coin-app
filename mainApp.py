@@ -643,6 +643,8 @@ class POApp(QWidget):
         border: 2px solid rgb(189, 186, 186)
         """)
 
+        self.editExistingPO = QPushButton('Edit Existing PO')
+
         #Selector Field
         selectorFieldLayout = QHBoxLayout()
 
@@ -669,11 +671,6 @@ class POApp(QWidget):
         self.termsField.addItems(['Consignment','Sold','Split'])
 
         # Create a button to trigger the popup window
-        self.newCoinButton = QPushButton('Add New Row')
-        self.newCoinButton.clicked.connect(self.AddNewRow)
-
-        self.deleteRowButton = QPushButton('Delete Row')
-        self.deleteRowButton.clicked.connect(self.deleteRow)
 
         self.saveCoinToDB = QPushButton('Add New Coin to DB')
         self.saveCoinToDB.clicked.connect(self.addNewCoin)
@@ -689,9 +686,9 @@ class POApp(QWidget):
         selectorFieldLayout.addWidget(self.termsField)
         selectorFieldLayout.addStretch(1)
         buttonLayout = QVBoxLayout()
-        buttonLayout.addWidget(self.newCoinButton)
-        buttonLayout.addWidget(self.deleteRowButton)
+
         buttonLayout.addWidget(self.saveCoinToDB)
+        buttonLayout.addWidget(self.editExistingPO)
         selectorFieldLayout.addLayout(buttonLayout)
 
         """ BARCODE SECTION """
@@ -728,7 +725,16 @@ class POApp(QWidget):
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
         self.saveButton.clicked.connect(self.savePO)
+
+        self.newCoinButton = QPushButton('Add New Row')
+        self.newCoinButton.clicked.connect(self.AddNewRow)
+
+        self.deleteRowButton = QPushButton('Delete Row')
+        self.deleteRowButton.clicked.connect(self.deleteRow)
+
         self.verticalLabelLayout.addWidget(self.saveButton)
+        self.verticalLabelLayout.addWidget(self.newCoinButton)
+        self.verticalLabelLayout.addWidget(self.deleteRowButton)
 
         bigHorizontalLayout.addSpacing(20)
         bigHorizontalLayout.addWidget(self.table)
@@ -740,12 +746,13 @@ class POApp(QWidget):
         topLayout = QHBoxLayout()
 
         topLayout.addWidget(backButton)
+        topLayout.addStretch(4)
+        topLayout.addWidget(self.topLabel)
+        topLayout.addStretch(5)
         pageLayout.addLayout(topLayout)
         topLayout.addStretch(1)
 
         #Begin page layout
-
-        pageLayout.addWidget(self.topLabel)
 
         pageLayout.addLayout(selectorFieldLayout)
         pageLayout.addLayout(barcodeLayout)
@@ -843,7 +850,10 @@ class POApp(QWidget):
         self.poField.addItems(list(map(str, listPOs)))
         self.saveButton.setEnabled(True)
         self.saveButton.setStyleSheet("stylesheets\poStyles.css")
-       
+        self.newCoinButton.setEnabled(True)
+        self.deleteRowButton.setEnabled(True)
+        self.newCoinButton.setStyleSheet("stylesheets\poStyles.css")
+        self.deleteRowButton.setStyleSheet("stylesheets\poStyles.css")
         
         #Close Window
         POAppWindow.close()
@@ -904,6 +914,10 @@ class POApp(QWidget):
         ## ADD OTHER GUI FUNCTIONAILITY
         self.saveButton.setEnabled(False)
         self.saveButton.setStyleSheet("background-color: gray;")
+        self.newCoinButton.setEnabled(False)
+        self.newCoinButton.setStyleSheet("background-color: gray;")
+        self.deleteRowButton.setEnabled(False)
+        self.deleteRowButton.setStyleSheet("background-color: gray;")
         #self.printPOLabel = QPushButton('Print PO')
         self.printLabelsLabel = QPushButton('Print Labels')
         self.printLabelsLabel.clicked.connect(self.PrintAllCoins)
@@ -1202,13 +1216,10 @@ class inventoryReportApp(QWidget):
         self.mainDataLayout.addLayout(self.dataDisplaylayout)
 
 
-        
-
         #Begin page layout
         self.pageLayout = QVBoxLayout()
         self.pageLayout.addLayout(topLayout)
         self.pageLayout.addWidget(self.topLabel)
-        self.pageLayout.addStretch(1)
         self.pageLayout.addLayout(self.mainDataLayout)
 
 
@@ -1224,7 +1235,7 @@ class inventoryReportApp(QWidget):
         homeAppWindow.show()
 
     def refresh(self):
-        self.dataDisplaylayout = QHBoxLayout()
+        #self.dataDisplaylayout = QHBoxLayout()
         reportData = getReportData()
         # Create and add labels and fields to the layout
         dataNew = {
@@ -1235,29 +1246,39 @@ class inventoryReportApp(QWidget):
             "Total Price Sold": str(reportData[4])
         }
 
-        #Count of PO's
-        #for label_text, value_text in dataNew.items():
-        CountPOframe = QFrame(self);CountPOframe.setFrameShape(QFrame.Shape.Box);CountPOframe.setLineWidth(1)
+        for i in reversed(range(self.dataDisplaylayout.count())): 
+            self.dataDisplaylayout.itemAt(i).widget().setParent(None)
 
-        label = QLabel("Count of PO's", CountPOframe)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        value = QLineEdit(dataNew["Count of PO's"], CountPOframe)
-        value.setReadOnly(True)
-        value.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        import time
 
-        frameLayout = QVBoxLayout(CountPOframe)
-        frameLayout.addWidget(label)
-        frameLayout.addWidget(value)
+        print("Before pause")
+        time.sleep(1)  # Pause the script for 1 second
+        print("After pause")
 
-        #Add to dataDisplaylayout
-        self.dataDisplaylayout.addWidget(CountPOframe)
-    
+        for label_text, value_text in dataNew.items():
+            frame = QFrame(self)
+            frame.setFrameShape(QFrame.Shape.Box)
+            frame.setLineWidth(1)
 
+            label = QLabel(label_text, frame)
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            value = QLineEdit(value_text, frame)
+            value.setReadOnly(True)
+            value.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            frameLayout = QVBoxLayout(frame)
+            frameLayout.addWidget(label)
+            frameLayout.addWidget(value)
+
+            self.dataDisplaylayout.addWidget(frame)
         #Add layout to space data Display to left hand side
-        self.mainDataLayoutNew = QHBoxLayout()
-        self.mainDataLayoutNew.addLayout(self.dataDisplaylayout)
-        self.pageLayout.removeItem(self.mainDataLayoutNew)
-        self.pageLayout.addLayout(self.mainDataLayoutNew)
+        self.mainDataLayout = QHBoxLayout()
+        self.mainDataLayout.addLayout(self.dataDisplaylayout)
+        self.pageLayout.addLayout(self.mainDataLayout)
+
+        print('Attempted to update')
+
+        return
 
 
 class ScannerTesterApp(QWidget):
@@ -1443,6 +1464,14 @@ All Qt Modules: https://doc.qt.io/qtforpython/modules.html
 -- Different Barcodes
 -- Add new coin functionality
 -- Pullup old PO's & adjust them as needed (aka print)
+"""
+
+"""
+FROM LURCH TO WORK ON
+--- SANDWHICH THE GRADE BETWEEN PREFIX & SUFFIX
+--- DENOMINATION SIGN (1C-50C, $1-$50)
+--- EDIT PO
+
 """
 
 
