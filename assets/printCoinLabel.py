@@ -25,7 +25,7 @@ def printCoinLabel(pcgs, denom, service, grade, price, po, uniqueID, pcgs_actual
     printer_label = Dispatch('Dymo.DymoLabels')
 
     printer_label.setField('PCGS',pcgs)
-    printer_label.setField('DENOM',denom )
+    printer_label.setField('DENOM',denom)
     printer_label.setField('SERVICE', service)
     printer_label.setField('GRADE', grade)
     printer_label.setField('PRICE', '$'+str(price))

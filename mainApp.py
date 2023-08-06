@@ -957,8 +957,9 @@ class POApp(QWidget):
             dataToPrint = dataToPrint[dataToPrint['PCGS #'] != '']
             for index,row in dataToPrint.iterrows():
                 print('Printing Labels for:')
-                print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
-                printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
+                date = row[1].split('-')[0] if len(row[1].split('-')) == 3 else "-".join([str(item) for item in row[1].split('-')[0:2]])
+                print(date, row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
+                printCoinLabel(date, row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
 
             self.savedToDBMessage = QMessageBox(self)
             self.savedToDBMessage.setWindowTitle('Labels printing!')
