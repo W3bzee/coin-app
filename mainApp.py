@@ -26,6 +26,7 @@ unpwFilepath = './assets/unpw.csv'
 from Database.createNewPO import *
 from Database.getCoinData import *
 from Database.updatePOTable import *
+from Database.editExistingPO import *
 # Serial Functions
 from Database.updatePOTableSerial import *
 from Database.getCoinDataSerial import *
@@ -643,7 +644,8 @@ class POApp(QWidget):
         border: 2px solid rgb(189, 186, 186)
         """)
 
-        self.editExistingPO = QPushButton('Edit Existing PO')
+        self.editExistingPOButton = QPushButton('Edit Existing PO')###
+        self.editExistingPOButton.clicked.connect(self.editExistingPO)
 
         #Selector Field
         selectorFieldLayout = QHBoxLayout()
@@ -688,7 +690,7 @@ class POApp(QWidget):
         buttonLayout = QVBoxLayout()
 
         buttonLayout.addWidget(self.saveCoinToDB)
-        buttonLayout.addWidget(self.editExistingPO)
+        buttonLayout.addWidget(self.editExistingPOButton)
         selectorFieldLayout.addLayout(buttonLayout)
 
         """ BARCODE SECTION """
@@ -729,7 +731,7 @@ class POApp(QWidget):
         self.newCoinButton = QPushButton('Add New Row')
         self.newCoinButton.clicked.connect(self.AddNewRow)
 
-        self.deleteRowButton = QPushButton('Delete Row')
+        self.deleteRowButton = QPushButton('Delete Last Row')
         self.deleteRowButton.clicked.connect(self.deleteRow)
 
         self.verticalLabelLayout.addWidget(self.saveButton)
@@ -798,7 +800,7 @@ class POApp(QWidget):
     def showLeavingPopup(self):
         self.savedContactMessage = QMessageBox(self)
         self.savedContactMessage.setWindowTitle('Leave without saving?')
-        self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?')
+        self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?\n\nIf you are just printing labels\nfrom a previous PO, the data is already saved')
         self.savedContactMessage.setIcon(QMessageBox.Icon.Warning)
         self.savedContactMessage.setStandardButtons(QMessageBox.StandardButton.Retry|
                                QMessageBox.StandardButton.Ok|
@@ -810,7 +812,7 @@ class POApp(QWidget):
         if self.saveButton.isEnabled() and self.model._data.iloc[0][0] != '':
             self.savedContactMessage = QMessageBox(self)
             self.savedContactMessage.setWindowTitle('Leave without saving?')
-            self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?')
+            self.savedContactMessage.setText('The data inputted is not saved.\nAre you sure you want to leave?\n\nIf you are just printing labels\nfrom a previous PO, the data is already saved')
             self.savedContactMessage.setIcon(QMessageBox.Icon.Warning)
             self.savedContactMessage.setStandardButtons(QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No)
             result = self.savedContactMessage.exec()
@@ -842,6 +844,7 @@ class POApp(QWidget):
             print('')
         self.model = PandasModel(createNewPOfunc())
         self.table.setModel(self.model)
+        self.saveButton.setText('Save PO')
         listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
         listPOs = listPOs + [pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].iloc[-1]+1]
         listPOs = sorted(listPOs, reverse=True)
@@ -919,10 +922,14 @@ class POApp(QWidget):
         self.deleteRowButton.setEnabled(False)
         self.deleteRowButton.setStyleSheet("background-color: gray;")
         #self.printPOLabel = QPushButton('Print PO')
-        self.printLabelsLabel = QPushButton('Print Labels')
-        self.printLabelsLabel.clicked.connect(self.PrintAllCoins)
-        self.printOneLabelButton = QPushButton('Print One Label')
-        self.printOneLabelButton.clicked.connect(self.PrintOneCoin)
+        button = self.findChild(QPushButton, "printOneLabelButton")
+        if button is not None:
+            print('Already Exists')
+        else:
+            self.printLabelsLabel = QPushButton('Print Labels')
+            self.printLabelsLabel.clicked.connect(self.PrintAllCoins)
+            self.printOneLabelButton = QPushButton('Print One Label')
+            self.printOneLabelButton.clicked.connect(self.PrintOneCoin)
 
 
         #self.verticalLabelLayout.addWidget(self.printPOLabel)
@@ -1031,6 +1038,68 @@ class POApp(QWidget):
         self.table.setColumnWidth(7,200)
         self.table.setColumnWidth(8,200)
 
+    def editExistingPO(self):
+        #Show popup
+        coin_info, ok_pressed = QInputDialog.getText(self, 'Enter Coin Information', 'Please Enter the PO# or scan a coin Inventory Barcode from the PO:')
+       # Check if the user clicked 'OK' and retrieve the entered text
+        if ok_pressed:
+            try:
+                extractValuesDF = getPOInfoFromBarcode(coin_info)
+                PO = extractValuesDF['PO'].iloc[0]
+                customer = extractValuesDF['Customer'].iloc[0]
+                terms = extractValuesDF['Terms'].iloc[0]
+                uniqueIDs = extractValuesDF['UniqueIDs'].iloc[0]
+                coinDB = getCoinFromTCSLabel(str(PO))
+                coinDB['CAC'] = ''
+                newDF = coinDB
+                newIndex = ['{:03d}'.format(i) for i in range(1, len(newDF)+1)]
+                newDF.index = newIndex
+                self.model = PandasModel(newDF)
+                self.table.setModel(self.model)
+                self.table.setColumnWidth(1,300)
+                self.table.setColumnWidth(4,30)
+                self.table.setColumnWidth(7,190)
+                self.table.setColumnWidth(8,190)
+                delegate = NonEditableDelegate()
+                
+                #Change selector dropdown fields
+                self.customerField.setCurrentText(customer)
+                self.poField.setCurrentText(str(PO))
+                self.termsField.setCurrentText(terms)
+
+                #Adjust UI
+                button = self.findChild(QPushButton, "printOneLabelButton")
+                if button is not None:
+                    print('Already Exists')
+                else:
+                    self.saveButton.setText('Save Updated PO')
+                    self.printLabelsLabel = QPushButton('Print Labels')
+                    self.printLabelsLabel.setObjectName("printLabelsButton")
+                    self.printLabelsLabel.clicked.connect(self.PrintAllCoins)
+
+                    self.printOneLabelButton = QPushButton('Print One Label')
+                    self.printLabelsLabel.setObjectName("printOneLabelButton")
+                    self.printOneLabelButton.clicked.connect(self.PrintOneCoin)
+                    #self.verticalLabelLayout.addWidget(self.printPOLabel)
+                    self.verticalLabelLayout.addWidget(self.printLabelsLabel)
+                    self.verticalLabelLayout.addWidget(self.printOneLabelButton)
+
+
+                self.AddNewRow()
+                #Remove Data from Database
+
+
+                #Resave PO data to Database
+
+
+            except IndexError as IE:
+                self.savedContactMessage = QMessageBox(self)
+                self.savedContactMessage.setWindowTitle('PO Not Found')
+                self.savedContactMessage.setText('The PO of {} is not found in the Database'.format(coin_info))
+                self.savedContactMessage.setIcon(QMessageBox.Icon.Warning)
+                self.savedContactMessage.exec()
+
+        return
 
 class newContactApp(QWidget):
     def __init__(self):
@@ -1462,16 +1531,12 @@ All Qt Modules: https://doc.qt.io/qtforpython/modules.html
 ######################
 """
 --- HEAVY HITTERS
--- Different Barcodes
--- Add new coin functionality
--- Pullup old PO's & adjust them as needed (aka print)
+
 """
 
 """
 FROM LURCH TO WORK ON
---- SANDWHICH THE GRADE BETWEEN PREFIX & SUFFIX
---- DENOMINATION SIGN (1C-50C, $1-$50)
---- EDIT PO
+
 
 """
 
@@ -1479,7 +1544,7 @@ FROM LURCH TO WORK ON
 """
 - TO DO
 --- Add refresh button to Inventory Report
---- Remove Print Labels on Incoice Window
+--- Remove Print Labels on Invoice Window
 --- Add New Coin takes in BarCode Scanner
 
 """
