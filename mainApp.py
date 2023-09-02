@@ -895,6 +895,22 @@ class POApp(QWidget):
         dataToPush['Unique ID'] = uniqueIDs
         print('\nPushing data to Coin Database...\n\n{}'.format(dataToPush))
 
+        #See if PO is being Edited or is new
+        POCoinsDB = pd.read_csv('Database\Data\purchaseOrderCoins.csv')
+        if not POCoinsDB[POCoinsDB['UniqueID'].str.split('-').str[0] == self.poField.currentText()].empty: #If the PO # is already in the Database (being edited)
+            print('NOT AVAILABLE YET')
+
+            # Print NOT WORKING MESSAGE
+            self.savedToDBMessage = QMessageBox(self)
+            self.savedToDBMessage.setWindowTitle('PO Edit Unsuccesful.')
+            self.savedToDBMessage.setText('Unfortunately the PO Editing is a hard ass problem\n\nshit azz developer is working on it\nIn the meantime, you can use this to print old labels')
+            self.savedToDBMessage.setIcon(QMessageBox.Icon.Warning)
+            self.savedToDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
+            self.savedToDBMessage.setStyleSheet("QMessageBox { min-width:500px }")
+            self.savedToDBMessage.exec()
+
+            return
+        
         ##Save Coin Metadata to inventoryCoins Database
         dataToPush.to_csv('Database\Data\inventoryCoins.csv', index=False, header=not os.path.exists('Database\Data\inventoryCoins.csv'), mode='a')
 
@@ -1050,7 +1066,7 @@ class POApp(QWidget):
                 terms = extractValuesDF['Terms'].iloc[0]
                 uniqueIDs = extractValuesDF['UniqueIDs'].iloc[0]
                 coinDB = getCoinFromTCSLabel(str(PO))
-                coinDB['CAC'] = ''
+                #coinDB['CAC'] = ''
                 newDF = coinDB
                 newIndex = ['{:03d}'.format(i) for i in range(1, len(newDF)+1)]
                 newDF.index = newIndex
