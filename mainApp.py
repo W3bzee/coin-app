@@ -6,9 +6,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import *
 from PyQt6 import QtCore, QtWidgets
-
-from PyQt6.QtGui import QIcon, QPalette, QColor
 from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QIcon, QFont
 
 """Import Python Modules"""
 import sys
@@ -38,11 +37,6 @@ from Database.getCoinInvoiceSerial import *
 from Database.inventoryReport import *
 
 
-import sys
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPainter
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
-
 """ Import functions for Printer """
 from win32com.client import Dispatch
 from assets.printCoinLabel import *
@@ -54,6 +48,17 @@ global loginWindow
 global homeAppWindow
 global POAppWindow
 global verticalLabelLayout
+
+""" SET REV VERSION """
+revVersion = 'v0.02.01'
+lastUpdate = '9/4/2023'
+
+""" SET FONTS """
+font = "Perpetua Titling MT"
+font2 = 'Adobe Devanagari'
+
+custom_font1 = QFont(font,64)
+custom_font2 = QFont(font2)
 
 
 
@@ -108,14 +113,24 @@ class loginScreen(QWidget):
         self.setWindowIcon(QIcon('assets/coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80) # width,height
 
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
+
         """BEGIN WIDGITS"""
-        self.title = QLabel("Third Coast \nSupply Company LLC")
+        self.title = QLabel("Third Coast\nSupply Company LLC")
+        self.title.setObjectName('title')
+        self.title.setFont(custom_font1)
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
     
-        self.user = QLabel("Login Form:")    
+        self.user = QLabel("Login Form:")
+        self.user.setFont(custom_font2)    
         self.user.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.pwd = QLabel("Password:")
+        self.pwd.setFont(custom_font2)  
         self.pwd.setAlignment(Qt.AlignmentFlag.AlignRight)
         
         self.unInput = QLineEdit()
@@ -124,17 +139,24 @@ class loginScreen(QWidget):
         self.pwInput.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.button1 = QPushButton('Register')
+        self.button1.setFont(custom_font2)  
         self.button1.clicked.connect(self.register)
 
         self.button2 = QPushButton("Login")
+        self.button2.setFont(custom_font2)
         self.button2.clicked.connect(self.login)
+
+        self.revVersion = QLabel('Version: {}\nLast Update: {}'.format(revVersion,lastUpdate))
+        self.revVersion.setObjectName('rev')
+        self.revVersion.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         #Set window layout
         layout = QVBoxLayout()
         hbox = QHBoxLayout()
 
-        layout.addStretch(1)
+        layout.addStretch(3)
         hbox.addWidget(self.title)
+        layout.addStretch(2)
         layout.addLayout(hbox)
         loginLayout = QGridLayout()
         loginLayout.addWidget(self.user, 1, 0)
@@ -143,11 +165,15 @@ class loginScreen(QWidget):
         loginLayout.addWidget(self.pwInput, 2, 1, 1, 2)
         loginLayout.addWidget(self.button1, 3, 1)
         loginLayout.addWidget(self.button2, 3, 2)
-        #loginLayout.setContentsMargins(30,30,30,30)
+        #loginLayout.setContentsMargins()
+        loginLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         loginLayout.setSpacing(10)
         
         layout.addLayout(loginLayout)
-        layout.addStretch(1)
+
+        layout.addStretch(7)
+        layout.addWidget(self.revVersion)
+
         self.setLayout(layout)
 
 
@@ -231,6 +257,12 @@ class homeApp(QWidget):
         self.setWindowIcon(QIcon('assets/coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
+
         #Logout Button
         self.logoutButton = QPushButton("Logout",self, clicked = self.logout)
         logoutLayout.addWidget(self.logoutButton)
@@ -238,6 +270,7 @@ class homeApp(QWidget):
 
         #Title
         self.Title = QLabel('Third Coast \nSupply Company LLC')
+        self.Title.setFont(custom_font1)  
         self.Title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Title.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
@@ -253,6 +286,7 @@ class homeApp(QWidget):
 
         # New Invoice Label
         self.newInvoiceLabel = QLabel('New Invoice')
+        self.newInvoiceLabel.setFont(custom_font2)  
         self.newInvoiceLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # New Purchase Order
@@ -263,6 +297,7 @@ class homeApp(QWidget):
 
         # New Purchase Label
         self.newPurchaseOrderLabel = QLabel('New Purchase Order')
+        self.newPurchaseOrderLabel.setFont(custom_font2)
         self.newPurchaseOrderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # New Contact
@@ -273,6 +308,7 @@ class homeApp(QWidget):
 
         # New Contact Label
         self.newContactLabel = QLabel('New Contact')
+        self.newContactLabel.setFont(custom_font2)
         self.newContactLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Run Report
@@ -283,19 +319,26 @@ class homeApp(QWidget):
 
         # Run Report Label
         self.runReportLabel = QLabel('Inventory Report')
+        self.runReportLabel.setFont(custom_font2)
         self.runReportLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Scanner Test Page
-        self.Test = QPushButton("Scanner Test", self)
-        self.Test.setGeometry(0, 0, 100, 200)
-        self.Test.setIconSize(QSize(100,100))
-        self.Test.clicked.connect(self.testerFunc)
+        self.ScannerTest = QPushButton("Scanner Test", self)
+        self.ScannerTest.setFont(custom_font2)
+        self.ScannerTest.setGeometry(0, 0, 100, 200)
+        self.ScannerTest.setIconSize(QSize(100,100))
+        self.ScannerTest.clicked.connect(self.testerFunc)
 
         # Printer Test Page
         self.PrinterTest = QPushButton("Printer Test", self)
+        self.PrinterTest.setFont(custom_font2)
         self.PrinterTest.setGeometry(0, 0, 100, 200)
         self.PrinterTest.setIconSize(QSize(100,100))
         self.PrinterTest.clicked.connect(self.printerTesterFunc)
+
+        self.revVersion = QLabel('Version: {}\nLast Update: {}'.format(revVersion,lastUpdate))
+        self.revVersion.setObjectName('rev')
+        self.revVersion.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         #START PAGE LAYOUT
 
@@ -319,7 +362,7 @@ class homeApp(QWidget):
         vbox.addStretch(1)
         hbox3 = QHBoxLayout()
         hbox4 = QHBoxLayout()
-        hbox3.addWidget(self.Test)
+        hbox3.addWidget(self.ScannerTest)
         hbox4.addWidget(self.PrinterTest)
         hbox3.addStretch(4)
         hbox4.addStretch(4)
@@ -327,6 +370,7 @@ class homeApp(QWidget):
         vbox.addSpacing(10)
         vbox.addLayout(hbox4)
         vbox.addStretch(1)
+        vbox.addWidget(self.revVersion)
 
         # set the main layout
         self.setLayout(vbox)
@@ -382,16 +426,23 @@ class newInvoiceApp(QWidget):
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
 
 
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
+
         """BEGIN WIDGITS"""
         #Back Button
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
-        backButton.clicked.connect(self.returnHomeScreen)
-        
+        backButton.clicked.connect(self.returnHomeScreen)        
 
         #Top Label
         self.topLabel = QLabel('Third Coast\nSupply Company LLC')
+        self.topLabel.setFont(custom_font1)
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.topLabel.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
@@ -402,10 +453,12 @@ class newInvoiceApp(QWidget):
 
         self.dateFieldLabel = QLabel('Date')
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.dateFieldLabel.setFont(custom_font2)
         self.dateField = QtWidgets.QDateEdit(calendarPopup=True,date=date.today())
 
         self.invoiceLabel = QLabel('Inv #')
-        self.invoiceLabel.setAlignment(Qt.AlignmentFlag.AlignRight)        
+        self.invoiceLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.invoiceLabel.setFont(custom_font2)        
         self.invoiceField = QComboBox()
         df = pd.read_csv('Database\Data\invoices.csv')
         listInvoices = [x for x in pd.read_csv('Database\Data\invoices.csv')['Invoice'].values]
@@ -414,11 +467,13 @@ class newInvoiceApp(QWidget):
         self.invoiceField.addItems(list(map(str, listInvoices)))
 
         self.customerLabel = QLabel('Customer')
+        self.customerLabel.setFont(custom_font2)
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.customerField = QComboBox()
         self.customerField.addItems([str(x) for x in pd.read_csv('Database\Data\contacts.csv')['customer']])
 
         self.termsLabel = QLabel('Terms')
+        self.termsLabel.setFont(custom_font2)
         self.termsLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.termsField = QComboBox()
         self.termsField.addItems(['Immediate', 'Approval' , 'Time to Pay'])
@@ -426,11 +481,13 @@ class newInvoiceApp(QWidget):
         """ BARCODE SECTION """
         # Bar Code Input
         self.InvoiceBarCodeLabel = QLabel('Scan TCS Bar Code:')
+        self.InvoiceBarCodeLabel.setFont(custom_font2)
         self.InvoiceBarCodeInput = QTextEdit()
         self.InvoiceBarCodeInput.setMaximumSize(300,50)
         self.InvoiceBarCodeInput.setPlaceholderText('Scan Here')
         self.InvoiceBarCodeInput.installEventFilter(self)
         self.InvoiceBarCodeButton = QPushButton('Run')
+        self.InvoiceBarCodeButton.setFont(custom_font2)
 
         barcodeLayout = QHBoxLayout()
         barcodeLayout.addStretch(3)
@@ -469,6 +526,7 @@ class newInvoiceApp(QWidget):
 
         #Vertical Buttons
         self.saveInvoiceButton = QPushButton('Save')
+        self.saveInvoiceButton.setFont(custom_font2)
         self.saveInvoiceButton.clicked.connect(self.saveInvoice)
         self.verticalLabelLayout.addWidget(self.saveInvoiceButton)
 
@@ -482,11 +540,12 @@ class newInvoiceApp(QWidget):
         topLayout = QHBoxLayout()
 
         topLayout.addWidget(backButton)
-        topLayout.addStretch(1)
+        topLayout.addStretch(4)
+        topLayout.addWidget(self.topLabel)
+        topLayout.addStretch(5)
 
         #Begin page layout
         pageLayout.addLayout(topLayout)
-        pageLayout.addWidget(self.topLabel)
 #
         pageLayout.addLayout(selectorFieldLayout)
         pageLayout.addLayout(barcodeLayout)
@@ -626,35 +685,46 @@ class newInvoiceApp(QWidget):
 class POApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('PCGS Coin Inventory Tracker')
+        self.setWindowTitle('Create New PO')
         self.setWindowIcon(QIcon('assets\coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
 
         """BEGIN WIDGITS"""
         #Back Button
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
         backButton.clicked.connect(self.returnHomeScreen)
         
         #Top Label
         self.topLabel = QLabel('Third Coast\nSupply Company LLC')
+        self.topLabel.setFont(custom_font1)
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.topLabel.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
         """)
 
-        self.editExistingPOButton = QPushButton('Edit Existing PO')###
+        self.editExistingPOButton = QPushButton('Edit Existing PO')
+        self.editExistingPOButton.setFont(custom_font2)
         self.editExistingPOButton.clicked.connect(self.editExistingPO)
 
         #Selector Field
         selectorFieldLayout = QHBoxLayout()
 
         self.dateFieldLabel = QLabel('Date')
+        self.dateFieldLabel.setFont(custom_font2)
         self.dateFieldLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.dateField = QtWidgets.QDateEdit(calendarPopup=True,date=date.today())
 
         self.poLabel = QLabel('PO')
+        self.poLabel.setFont(custom_font2)
         self.poLabel.setAlignment(Qt.AlignmentFlag.AlignRight)        
         self.poField = QComboBox()
         listPOs = [x for x in pd.read_csv('Database\Data\purchaseOrders.csv')['PO'].values]
@@ -663,11 +733,13 @@ class POApp(QWidget):
         self.poField.addItems(list(map(str, listPOs)))
 
         self.customerLabel = QLabel('Customer')
+        self.customerLabel.setFont(custom_font2)
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.customerField = QComboBox()
         self.customerField.addItems([str(x) for x in pd.read_csv('Database\Data\contacts.csv')['customer']])
 
         self.termsLabel = QLabel('Terms')
+        self.termsLabel.setFont(custom_font2)
         self.termsLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.termsField = QComboBox()
         self.termsField.addItems(['Consignment','Sold','Split'])
@@ -675,6 +747,7 @@ class POApp(QWidget):
         # Create a button to trigger the popup window
 
         self.saveCoinToDB = QPushButton('Add New Coin to DB')
+        self.saveCoinToDB.setFont(custom_font2)
         self.saveCoinToDB.clicked.connect(self.addNewCoin)
 
         selectorFieldLayout.addStretch(1)
@@ -696,11 +769,13 @@ class POApp(QWidget):
         """ BARCODE SECTION """
         # Bar Code Input
         self.BarCodeLabel = QLabel('Scan Bar Code:')
+        self.BarCodeLabel.setFont(custom_font2)
         self.BarCodeInput = QTextEdit()
         self.BarCodeInput.setMaximumSize(300,50)
         self.BarCodeInput.setPlaceholderText('Scan Here')
         self.BarCodeInput.installEventFilter(self)
         self.BarCodeButton = QPushButton('Run')
+        self.BarCodeButton.setFont(custom_font2)
         self.BarCodeButton.clicked.connect(self.BarCodeRun)
 
         barcodeLayout = QHBoxLayout()
@@ -726,12 +801,15 @@ class POApp(QWidget):
 
         #Vertical Buttons
         self.saveButton = QPushButton('Save')
+        self.saveButton.setFont(custom_font2)
         self.saveButton.clicked.connect(self.savePO)
 
         self.newCoinButton = QPushButton('Add New Row')
+        self.newCoinButton.setFont(custom_font2)
         self.newCoinButton.clicked.connect(self.AddNewRow)
 
         self.deleteRowButton = QPushButton('Delete Last Row')
+        self.deleteRowButton.setFont(custom_font2)
         self.deleteRowButton.clicked.connect(self.deleteRow)
 
         self.verticalLabelLayout.addWidget(self.saveButton)
@@ -1117,22 +1195,31 @@ class POApp(QWidget):
 
         return
 
+
 class newContactApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('PCGS Coin Inventory Tracker')
+        self.setWindowTitle('Create New Contact')
         self.setWindowIcon(QIcon('assets\coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
         
         """BEGIN WIDGITS"""
         #Back Button
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
         backButton.clicked.connect(self.returnHomeScreen)
         
         #Top Label
         self.topLabel = QLabel('Third Coast \nSupply Company LLC')
+        self.topLabel.setFont(custom_font1)
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.topLabel.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
@@ -1147,6 +1234,7 @@ class newContactApp(QWidget):
 
         #Customer
         self.customerLabel = QLabel('Customer:')
+        self.customerLabel.setFont(custom_font2)
         self.customerLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.customerEntry = QLineEdit()
         customerBoxLayout.addStretch(1)
@@ -1156,6 +1244,7 @@ class newContactApp(QWidget):
 
         #Email
         self.emailLabel = QLabel('Email:')
+        self.emailLabel.setFont(custom_font2)
         self.emailLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.emailEntry = QLineEdit()
         emailBoxLayout.addStretch(1)
@@ -1165,6 +1254,7 @@ class newContactApp(QWidget):
 
         #Phone
         self.phoneLabel = QLabel('Phone:')
+        self.phoneLabel.setFont(custom_font2)
         self.phoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.phoneEntry = QLineEdit()
         phoneBoxLayout.addStretch(1)
@@ -1174,6 +1264,7 @@ class newContactApp(QWidget):
 
         #Address
         self.addressLabel = QLabel('Address:')
+        self.addressLabel.setFont(custom_font2)
         self.addressLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.addressEntry = QLineEdit()
         AddressBoxLayout.addStretch(1)
@@ -1191,6 +1282,7 @@ class newContactApp(QWidget):
         newContactButtonsLayout = QHBoxLayout()
 
         self.saveNewContactButton = QPushButton('Save')
+        self.saveNewContactButton.setFont(custom_font2)
         self.saveNewContactButton.clicked.connect(self.saveNewContact)
 
         newContactButtonsLayout.addStretch(1)
@@ -1200,12 +1292,13 @@ class newContactApp(QWidget):
         #Set top layout
         topLayout = QHBoxLayout()
         topLayout.addWidget(backButton)
-        topLayout.addStretch(1)
+        topLayout.addStretch(4)
+        topLayout.addWidget(self.topLabel)
+        topLayout.addStretch(5)
 
         #Begin page layout
         pageLayout = QVBoxLayout()
         pageLayout.addLayout(topLayout)
-        pageLayout.addWidget(self.topLabel)
         pageLayout.addStretch(1)
         pageLayout.addLayout(verticalLayout)
         pageLayout.addLayout(newContactButtonsLayout)
@@ -1242,22 +1335,31 @@ class inventoryReportApp(QWidget):
         self.setWindowTitle('PCGS Coin Inventory Tracker')
         self.setWindowIcon(QIcon('assets\coin.ico'))
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
         
         """BEGIN WIDGITS"""
         #Back Button
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
         backButton.clicked.connect(self.returnHomeScreen)
 
         #Refresh Button
         refreshButton = QPushButton(QIcon("assets\\refresh.ico"),"", self)
+        refreshButton.setObjectName('refreshButton')
         refreshButton.setGeometry(0, 0, 75, 100)
         refreshButton.setIconSize(QSize(80,80))
         refreshButton.clicked.connect(self.refresh)
 
         #Top Label
         self.topLabel = QLabel('Third Coast \nSupply Company LLC')
+        self.topLabel.setFont(custom_font1)
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.topLabel.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
@@ -1266,6 +1368,8 @@ class inventoryReportApp(QWidget):
         #Set top layout
         topLayout = QHBoxLayout()
         topLayout.addWidget(backButton)
+        topLayout.addStretch(1)
+        topLayout.addWidget(self.topLabel)
         topLayout.addStretch(1)
         topLayout.addWidget(refreshButton)
         self.dataDisplaylayout = QHBoxLayout()
@@ -1285,6 +1389,7 @@ class inventoryReportApp(QWidget):
             frame.setLineWidth(1)
 
             label = QLabel(label_text, frame)
+            label.setFont(custom_font2)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             value = QLineEdit(value_text, frame)
             value.setReadOnly(True)
@@ -1305,7 +1410,7 @@ class inventoryReportApp(QWidget):
         #Begin page layout
         self.pageLayout = QVBoxLayout()
         self.pageLayout.addLayout(topLayout)
-        self.pageLayout.addWidget(self.topLabel)
+        self.pageLayout.addStretch(1)
         self.pageLayout.addLayout(self.mainDataLayout)
 
 
@@ -1370,12 +1475,20 @@ class inventoryReportApp(QWidget):
 class ScannerTesterApp(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('Scanner Test')
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
 
         """BEGIN WIDGITS"""
         #Back Button
         hbox = QHBoxLayout()
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
         backButton.clicked.connect(self.returnHomeScreen)
@@ -1384,6 +1497,7 @@ class ScannerTesterApp(QWidget):
         # create a label in the center
     
         self.scanBoxLabel = QLabel('Try Scanning Below')
+        self.scanBoxLabel.setFont(custom_font2)
         self.scanBoxLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # create a QTextEdit widget to display the barcode data
         self.text_edit = QTextEdit()
@@ -1392,6 +1506,7 @@ class ScannerTesterApp(QWidget):
 
         # create a button to clear the entry form
         self.labelPrint = QPushButton('Clear Entry Form')
+        self.labelPrint.setFont(custom_font2)
         self.labelPrint.setGeometry(0, 0, 200, 200)
         self.labelPrint.setIconSize(QSize(100,100))
         self.labelPrint.clicked.connect(self.clearData)
@@ -1422,19 +1537,28 @@ class ScannerTesterApp(QWidget):
 class PrinterTesterApp(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('Printer Test')
         self.resize(self.screen().size().width(), self.screen().size().height()-80)
+
+        # Create a QLabel widget for the background image
+        background_label = QLabel(self)
+        pixmap = QPixmap('assets/bridge_background.jpg')
+        background_label.setPixmap(pixmap)
+        background_label.setGeometry(0, 0, self.width(), self.height())
 
         """BEGIN WIDGITS"""
         #Back Button
         hbox = QHBoxLayout()
         backButton = QPushButton(QIcon("assets\\backButton.ico"),"", self)
+        backButton.setObjectName('backButton')
         backButton.setGeometry(0, 0, 75, 100)
         backButton.setIconSize(QSize(80,80))
         backButton.clicked.connect(self.returnHomeScreen)
 
         vbox = QVBoxLayout()
         #Top Label
-        self.topLabel = QLabel('Input TCS Inventory Number')
+        self.topLabel = QLabel('Scan a Manufacturers Barcode & Click Run')
+        self.topLabel.setFont(custom_font2)
         self.topLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.topLabel.setStyleSheet("""
         border: 2px solid rgb(189, 186, 186)
@@ -1442,11 +1566,13 @@ class PrinterTesterApp(QWidget):
 
         hbox2 = QHBoxLayout()
 
-        self.InvoiceBarCodeLabel2 = QLabel('Scan TCS Bar Code:')
+        self.InvoiceBarCodeLabel2 = QLabel('Bar Code:')
+        self.InvoiceBarCodeLabel2.setFont(custom_font2)
         self.InvoiceBarCodeInput2 = QTextEdit()
         self.InvoiceBarCodeInput2.setMaximumSize(300,50)
-        self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
+        #self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
         self.InvoiceBarCodeRunButton2 = QPushButton('Run')
+        self.InvoiceBarCodeRunButton2.setFont(custom_font2)
         self.InvoiceBarCodeRunButton2.clicked.connect(self.runPrintTest)
 
         hbox2.addStretch(5)
@@ -1484,24 +1610,22 @@ class PrinterTesterApp(QWidget):
         if len(self.InvoiceBarCodeInput2.toPlainText()) == 1:
             self.InvoiceBarCodeInput2.clear()
             self.InvoiceBarCodeInput2.setFocus()
-            self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
+            #self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
             return 
 
-        print(tableEntry)
         
-        invoiceCoins = pd.read_csv('Database\Data\purchaseOrderCoins.csv')
+        #invoiceCoins = pd.read_csv('Database\Data\purchaseOrderCoins.csv')
         try:
-            invoiceCoins = invoiceCoins[invoiceCoins['UniqueID'] == tableEntry]
-            row = invoiceCoins.iloc[0]
-            print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], tableEntry.split('-')[0],tableEntry.split('-')[1], row[0])
-            printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], tableEntry.split('-')[0],tableEntry.split('-')[1], row[0])
+            row = getCoinDataSerial(tableEntry)
+            print('Printing single Label for:\n')
+            print(row['Description'].iloc[0].split('-')[0], row['Description'].iloc[0].split('-')[-2], row['Service'].iloc[0], row['Grade'].iloc[0], str('100'), str('XXX'), str('XXX'), row['PCGS #'].iloc[0])
+            printCoinLabel(row['Description'].iloc[0].split('-')[0], row['Description'].iloc[0].split('-')[-2], row['Service'].iloc[0], row['Grade'].iloc[0], str('100'), str('XXX'), str('XXX'), row['PCGS #'].iloc[0])
   
         except IndexError as IE:
             print('not available')
         
         self.InvoiceBarCodeInput2.clear()
         self.InvoiceBarCodeInput2.setFocus()
-        self.InvoiceBarCodeInput2.setPlaceholderText('(XXX-XXX)')
 
         return
 
@@ -1559,7 +1683,6 @@ FROM LURCH TO WORK ON
 
 """
 - TO DO
---- Add refresh button to Inventory Report
 --- Remove Print Labels on Invoice Window
 --- Add New Coin takes in BarCode Scanner
 

@@ -1,12 +1,12 @@
 QWidget {
     font-size: 26px;
-    background-color: rgb(189, 186, 186);
+    /*background-color: rgb(189, 186, 186);*/
     border-radius: 10px;
     font: 'Sans Serif';
 }
 
 QPushButton {
-        background-color: #1a66f4;
+        background-color: #000000;
         border-style: outset;
         border-width: 2px;
         border-radius: 10px;
@@ -57,4 +57,33 @@ QInputDialog {
 
 QTextEdit {
     border: 2x solid black;
+}
+
+/* Style for the Register button */
+QPushButton#backButton {
+    background-color: #777777; /* Blue color */
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: beige;
+    color: white;
+    font: bold 18px;
+    min-width: 10px;
+    padding: 6px;
+    min-width: 150px;
+}
+
+QPushButton#backButton:hover {
+    background-color: #F4A81A;
+    font: bold 21px;
+    min-width: 175px;
+}
+
+QLabel#rev {
+    font-size: 15px;
+}
+
+QLabel#lastUpdate {
+    font-size: 15px;
+    margin-bottom: 15px;
 }

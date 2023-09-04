@@ -1,11 +1,11 @@
 QWidget {
     font-size: 22px;
-    background-color: rgb(189, 186, 186);
+    /*background-color: rgb(189, 186, 186);*/
     
 }
 
 QPushButton {
-        background-color: #1a66f4;
+        background-color: #000000;
         border-style: outset;
         border-width: 2px;
         border-radius: 10px;
@@ -25,7 +25,7 @@ QPushButton:hover {
 
 
 QLabel {
-    border: 2px solid blue;
+    border: 2px solid rgb(107, 107, 107);
     font: bold;
     border-radius: 4px;
     padding: 6px;
@@ -60,4 +60,24 @@ QMessageBox QLabel {
 QTextEdit {
     border: 2px solid black;
     height: 30px;
+}
+
+/* Style for the Register button */
+QPushButton#backButton {
+    background-color: #777777; /* Blue color */
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: beige;
+    color: white;
+    font: bold 18px;
+    min-width: 10px;
+    padding: 6px;
+    min-width: 150px;
+}
+
+QPushButton#backButton:hover {
+    background-color: #F4A81A;
+    font: bold 21px;
+    min-width: 175px;
 }

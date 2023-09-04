@@ -1,12 +1,12 @@
 QWidget {
     font-size: 26px;
-    background-color: rgb(189, 186, 186);
+    /*background-color: rgb(189, 186, 186);*/
     border-radius: 10px;
-    font: 'Sans Serif';
+    font: 'Calibri';
 }
 
 QPushButton {
-        background-color: #1a66f4;
+        background-color: #000000;
         border-style: outset;
         border-width: 2px;
         border-radius: 10px;
@@ -14,10 +14,27 @@ QPushButton {
         font: bold 18px;
         color: white;
         min-width: 150px;
+        max-width: 200px;
         padding: 6px;
-        margin-right: 375px;
+        margin-right: 50px;
 
 }
+
+QLabel#title {
+    font-size: larger;
+    font-size: 64px;
+    margin-bottom: 100px;
+}
+
+QLabel#rev {
+    font-size: 15px;
+}
+
+QLabel#lastUpdate {
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+
 
 QPushButton:hover {
     background-color: #F4A81A;
@@ -26,7 +43,8 @@ QPushButton:hover {
 
 QLineEdit {
     border: 3px solid black;
-    margin-right: 375px;
+    max-width: 375px;
+
 }
 
 QLabel {

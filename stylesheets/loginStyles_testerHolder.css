@@ -1,0 +1,87 @@
+/* Set background color for the entire login screen */
+/*loginScreen {
+    background-color: #f0f0f0;
+}*/
+
+/* Style for the title label */
+QLabel#title {
+    font-size: 32px;
+}
+
+/* Style for the user label */
+QLabel#user {
+    font-weight: bold;
+    font-size: 32px;
+}
+
+/* Style for the password label */
+QLabel#pwd {
+    font-weight: bold;
+    font-size: 32px;
+}
+
+/* Style for the user input field */
+QLineEdit {
+    border: 1px solid hsl(115, 93%, 38%);
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+/* Style for the password input field */
+QLineEdit[echoMode="2"] {
+    /* echoMode="2" represents password mode */
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+/* Style for the Register button */
+QPushButton#button1 {
+    background-color: #000000; /* Blue color */
+    color: #fff; /* White text */
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+/* Style for the Login button */
+QPushButton#button2 {
+    background-color: #28a745; /* Green color */
+    color: #fff; /* White text */
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+/* Style for the Login button when hovered */
+QPushButton#button2:hover {
+    background-color: #1cd444; /* Darker green on hover */
+}
+
+/* Style for the QMessageBox warning icon */
+QMessageBox[windowTitle="Incorrect Login or Password"] QLabel {
+    border: 2px solid red;
+    padding: 2px;
+    max-width: 2000%;
+    color: red;
+}
+
+/* Style for the QMessageBox information icon */
+QMessageBox[windowTitle="Success"] QLabel {
+    border: 2px solid green;
+    padding: 2px;
+    max-width: 2000%;
+    color: green;
+}
+
+/* Style for the QMessageBox critical icon */
+QMessageBox[windowTitle="Registration Unsuccessful."] QLabel {
+    border: 2px solid red;
+    padding: 2px;
+    max-width: 2000%;
+    color: red;
+}
