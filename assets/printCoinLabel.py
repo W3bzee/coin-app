@@ -5,7 +5,7 @@ import pathlib
 my_printer = 'DYMO LabelWriter 450 Turbo'
 printer_com = Dispatch('Dymo.DymoAddIn')
 printer_com.SelectPrinter(my_printer)
-label_path = 'assets\label_final_wPCGS_updated.label'
+label_path = 'assets\label_final_011524.label'
 printer_com.Open2(label_path)
 
 
@@ -21,13 +21,11 @@ printer_com.Open2(label_path)
 - pcgs_actual
 """
 def printCoinLabel(pcgs, denom, service, grade, price, po, uniqueID, pcgs_actual):
-
     printer_label = Dispatch('Dymo.DymoLabels')
+    combination = '{} {} {} {}'.format(str(pcgs), str(denom), str(service), str(grade))
+    
+    printer_label.setField('COMBO',combination)
 
-    printer_label.setField('PCGS',pcgs)
-    printer_label.setField('DENOM',denom)
-    printer_label.setField('SERVICE', service)
-    printer_label.setField('GRADE', grade)
     printer_label.setField('PRICE', '$'+str(price))
     printer_label.setField('ID',str(po)+'-'+str(uniqueID))
     printer_label.setField('BARCODE', str(po)+'-'+str(uniqueID))

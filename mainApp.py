@@ -50,8 +50,8 @@ global POAppWindow
 global verticalLabelLayout
 
 """ SET REV VERSION """
-revVersion = 'v0.02.01'
-lastUpdate = '9/4/2023'
+revVersion = 'v0.02.02'
+lastUpdate = '1/15/2024'
 
 """ SET FONTS """
 font = "Perpetua Titling MT"
@@ -1677,6 +1677,9 @@ All Qt Modules: https://doc.qt.io/qtforpython/modules.html
 """
 FROM LURCH TO WORK ON
 
+--- Invoice print Piece of Paper
+
+GOAL IS 22nd (26th hard cutoff)
 
 """
 
