@@ -50,7 +50,7 @@ global POAppWindow
 global verticalLabelLayout
 
 """ SET REV VERSION """
-revVersion = 'v0.02.02'
+revVersion = 'v0.02.03'
 lastUpdate = '1/15/2024'
 
 """ SET FONTS """
