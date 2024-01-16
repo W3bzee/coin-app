@@ -1057,10 +1057,20 @@ class POApp(QWidget):
             dataToPrint = self.model._data
             dataToPrint = dataToPrint[dataToPrint['PCGS #'] != '']
             for index,row in dataToPrint.iterrows():
-                print('Printing Labels for:')
+                print('Printing Labels for: {}'.format(self.poField.currentText()))
                 date = row[1].split('-')[0] if len(row[1].split('-')) == 3 else "-".join([str(item) for item in row[1].split('-')[0:2]])
-                print(date, row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
-                printCoinLabel(date, row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0])
+
+                print('Date: ', date)
+                print('Denom: ', row[1].split('-')[-2])
+                print('Service: ', row[3])
+                print('CAC: ', row[4])
+                print('Cost: ', row[5])
+                print('Price: ', row[6])
+                print('PCGS#: ', row[0])
+                print('PO Index: ',index)
+
+
+                printCoinLabel(date, row[1].split('-')[-2], row[3], row[2], row[6],self.poField.currentText(),index, row[0], row[4])
 
             self.savedToDBMessage = QMessageBox(self)
             self.savedToDBMessage.setWindowTitle('Labels printing!')
