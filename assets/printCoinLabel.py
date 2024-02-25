@@ -22,7 +22,7 @@ printer_com.Open2(label_path)
 """
 def printCoinLabel(pcgs, denom, service, grade, price, po, uniqueID, pcgs_actual, CAC):
     printer_label = Dispatch('Dymo.DymoLabels')
-    CAC = 'CAC' if CAC == '1' else ''
+    CAC = 'CAC' if CAC in ['CAC','CAC '] else ''
     combination = '{} {} {} {} {}'.format(str(pcgs), str(denom), str(service), str(grade), str(CAC))
     printer_label.setField('COMBO',combination)
 
