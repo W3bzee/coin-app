@@ -50,7 +50,7 @@ global POAppWindow
 global verticalLabelLayout
 
 """ SET REV VERSION """
-revVersion = 'v0.02.03'
+revVersion = 'v0.02.04'
 lastUpdate = '1/15/2024'
 
 """ SET FONTS """
@@ -1083,21 +1083,21 @@ class POApp(QWidget):
             print(IE)
 
     def PrintOneCoin(self):
-        text, ok = QInputDialog.getMultiLineText(self, 'Enter Coin Information', 'Please Enter the Coin Index\nOr Indexes (seperated by ",")','')
+        text, ok = QInputDialog.getMultiLineText(self, 'Enter Coin Information', 'Please Enter the Coin Index\nLeftmost Number on Table')
         if ok:
-            parseText = text.split(',')
+            parseText = text
             try:
-                dataToPrint = self.model._data
-                dataToPrint = dataToPrint[dataToPrint['PCGS #'] != '']
+                dataToPrint = self.model._data                 
+                dataToPrint = dataToPrint[dataToPrint.index == text]
                 for index,row in dataToPrint.iterrows():
-                    if index in parseText:
+                    if index == parseText:
                         print('Printing Labels for:')
-                        print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], self.poField.currentText(),'-',index, row[0])
-                        printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], self.poField.currentText(),index, row[0])
+                        print(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], self.poField.currentText(),'-',index, row[0], row[4])
+                        printCoinLabel(row[1].split('-')[0], row[1].split('-')[-2], row[3], row[2], row[6], self.poField.currentText(),index, row[0], row[4])
                     else:
                         self.savedToDBMessage = QMessageBox(self)
-                        self.savedToDBMessage.setWindowTitle('That index [{}] is not scanned in.'.format(index))
-                        self.savedToDBMessage.setText('That index is not saved. Please ensure you are entering the leftmost number.')
+                        self.savedToDBMessage.setWindowTitle('Error with index {}'.format(index))
+                        self.savedToDBMessage.setText('That index {} is not saved. Please ensure you are entering the leftmost number.'.format(index))
                         self.savedToDBMessage.setIcon(QMessageBox.Icon.Information)
                         self.savedToDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
                         self.savedToDBMessage.exec()
@@ -1105,7 +1105,7 @@ class POApp(QWidget):
 
                 self.savedToDBMessage = QMessageBox(self)
                 self.savedToDBMessage.setWindowTitle('Labels printing!')
-                self.savedToDBMessage.setText('The label(s) are printing!\n\nYou can now find these\ncoins in an invoice.')
+                self.savedToDBMessage.setText('The label is printing!\n\nYou can now find these\ncoins in an invoice.')
                 self.savedToDBMessage.setIcon(QMessageBox.Icon.Information)
                 self.savedToDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
                 self.savedToDBMessage.exec()
