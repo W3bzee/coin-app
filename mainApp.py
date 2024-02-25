@@ -588,26 +588,40 @@ class newInvoiceApp(QWidget):
                     return False
                 elif result == QMessageBox.StandardButton.Apply:
                     self.savedContactMessage.close()
-            
+            else:
+                try:
+                    newInvoiceDF = updateInvoiceTableSerial(pd.DataFrame(self.Invoicemodel._data),tableEntry)
+                    newDF = pd.concat([newInvoiceDF, createNewInvoicefunc()])
+                    self.Invoicemodel = PandasModel(newDF)
+                    self.Invoicetable.setModel(self.Invoicemodel)
+                    self.Invoicetable.verticalHeader().setVisible(False)
+                    self.Invoicetable.setColumnWidth(2,300)
+                    self.Invoicetable.setColumnWidth(7,200)
+                    self.Invoicetable.setColumnWidth(8,200)
+                    self.Invoicetable.resizeColumnToContents(1)
+                    self.Invoicetable.resizeColumnToContents(3)
+                    self.Invoicetable.resizeColumnToContents(5)
 
-            try:
-                newInvoiceDF = updateInvoiceTableSerial(pd.DataFrame(self.Invoicemodel._data),tableEntry)
-                newDF = pd.concat([newInvoiceDF, createNewInvoicefunc()])
-                self.Invoicemodel = PandasModel(newDF)
-                self.Invoicetable.setModel(self.Invoicemodel)
-                self.Invoicetable.verticalHeader().setVisible(False)
-                self.Invoicetable.setColumnWidth(2,300)
-                self.Invoicetable.setColumnWidth(7,200)
-                self.Invoicetable.setColumnWidth(8,200)
-                self.Invoicetable.resizeColumnToContents(1)
-                self.Invoicetable.resizeColumnToContents(3)
-                self.Invoicetable.resizeColumnToContents(5)
 
             
-            except IndexError:
-                print(IndexError)
-            except ValueError:
-                print(ValueError)
+                except IndexError:
+                    print(IndexError)
+                    self.savedToInvoiceDBMessage = QMessageBox(self)
+                    self.savedToInvoiceDBMessage.setWindowTitle('Unsuccesfully found the entry of: {}'.format(tableEntry))
+                    self.savedToInvoiceDBMessage.setText('Please scan a Third Coast Supply printed barcode')
+                    self.savedToInvoiceDBMessage.setIcon(QMessageBox.Icon.Warning)
+                    self.savedToInvoiceDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
+                    self.savedToInvoiceDBMessage.setStyleSheet("QMessageBox { min-width:500px }")
+                    self.savedToInvoiceDBMessage.exec()
+                except ValueError:
+                    print(ValueError)
+                    self.savedToInvoiceDBMessage = QMessageBox(self)
+                    self.savedToInvoiceDBMessage.setWindowTitle('Unsuccesfully found the entry of: {}'.format(tableEntry))
+                    self.savedToInvoiceDBMessage.setText('Please scan a Third Coast Supply printed barcode')
+                    self.savedToInvoiceDBMessage.setIcon(QMessageBox.Icon.Warning)
+                    self.savedToInvoiceDBMessage.setStandardButtons(QMessageBox.StandardButton.Close)
+                    self.savedToInvoiceDBMessage.setStyleSheet("QMessageBox { min-width:500px }")
+                    self.savedToInvoiceDBMessage.exec()
             
 
             self.InvoiceBarCodeInput.clear()
