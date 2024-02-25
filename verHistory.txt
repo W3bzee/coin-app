@@ -1,3 +1,7 @@
+v0.02.05
+- update GetCoinInvoiceSerial file to accept 'CAC' as input
+- indented try statement in invoice call
+
 v0.02.04
 - Fixed printOneCoin function to pull the dataframe where it is equal to text input
 - Changed CAC input to be "CAC" in the box, added onto printOneCoin call of printOneLabel function

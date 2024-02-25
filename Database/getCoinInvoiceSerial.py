@@ -12,7 +12,7 @@ def getCoinInvoiceSerial(serial):
                         'Description':row['Description'].iloc[0],
                         'Grade':row['Grade'].iloc[0],
                         'Service':row['Service'].iloc[0],
-                        'CAC': '' if row['CAC'].isna().iloc[0] else int(row['CAC'].iloc[0]),
+                        'CAC': '' if row['CAC'].isna().iloc[0] else row['CAC'].iloc[0],
                         'Price': '' if row['Price'].isna().iloc[0] else int(row['Price'].iloc[0]),
                         'Certification ID':row['Certification ID'].iloc[0],
                         'Addl. Description':row['Addl. Description'].iloc[0]}

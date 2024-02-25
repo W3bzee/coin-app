@@ -50,8 +50,8 @@ global POAppWindow
 global verticalLabelLayout
 
 """ SET REV VERSION """
-revVersion = 'v0.02.04'
-lastUpdate = '1/15/2024'
+revVersion = 'v0.02.05'
+lastUpdate = '2/24/2024'
 
 """ SET FONTS """
 font = "Perpetua Titling MT"
